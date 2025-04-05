@@ -52,36 +52,34 @@
     <h1>Available Donations</h1>
   </header>
 
-  <div class="container">
-    <div class="card">
-      <img src="https://via.placeholder.com/250x180" alt="Item Image">
-      <h3>Men's Winter Jacket</h3>
-      <p><strong>Condition:</strong> Like New</p>
-      <p><strong>Location:</strong> Riyadh</p>
-      <p>Warm jacket perfect for winter use.</p>
-    </div>
-
-    <div class="card">
-      <img src="https://via.placeholder.com/250x180" alt="Item Image">
-      <h3>Study Desk</h3>
-      <p><strong>Condition:</strong> Used</p>
-      <p><strong>Location:</strong> Jeddah</p>
-      <p>Functional wooden desk with minor scratches.</p>
-    </div>
-
-    <div class="card">
-      <img src="https://via.placeholder.com/250x180" alt="Item Image">
-      <h3>Microwave Oven</h3>
-      <p><strong>Condition:</strong> New</p>
-      <p><strong>Location:</strong> Dammam</p>
-      <p>Brand new microwave, never used.</p>
-    </div>
+  <div class="container" id="donations-container">
+    <!-- Donations will be loaded here -->
   </div>
 
   <footer>
     <p>&copy; 2025 Used Items Donation Platform</p>
   </footer>
+
+  <script>
+    const container = document.getElementById('donations-container');
+    const donations = JSON.parse(localStorage.getItem('donations')) || [];
+
+    if (donations.length === 0) {
+      container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">No donations available yet.</p>';
+    } else {
+      donations.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="Item Image">
+          <h3>${item.name}</h3>
+          <p><strong>Condition:</strong> ${item.condition}</p>
+          <p><strong>Location:</strong> ${item.location}</p>
+          <p>${item.description}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
 </body>
 </html>
-
-
