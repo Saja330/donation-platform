@@ -2,73 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>New Donation</title>
+  <title>Donate an Item</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f4f6;
-      display: flex;
-      justify-content: center;
-      padding-top: 50px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
-    .donation-form {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    .donation-form h2 {
-      margin-bottom: 20px;
-      color: #333;
-    }
-    .donation-form input,
-    .donation-form select,
-    .donation-form textarea,
-    .donation-form button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    .donation-form button {
-      background-color: #10b981;
+    header, footer {
+      background-color: #2c3e50;
       color: white;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
+      text-align: center;
+      padding: 15px;
     }
-    .donation-form button:hover {
-      background-color: #059669;
+    form {
+      background-color: white;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label, input, textarea, select {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    input, textarea, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #219150;
     }
   </style>
 </head>
 <body>
+  <header>
+    <h1>Donate an Item</h1>
+  </header>
 
-  <form class="donation-form" action="/submit-donation" method="POST">
-    <h2>New Donation</h2>
-    
-    <label for="donorName">Donor Name</label>
-    <input type="text" id="donorName" name="donorName" required>
+  <form action="#" method="post">
+    <label for="item-name">Item Name</label>
+    <input type="text" id="item-name" name="item-name" required>
 
-    <label for="itemName">Item to Donate</label>
-    <input type="text" id="itemName" name="itemName" required>
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+      <option value="clothes">Clothes</option>
+      <option value="furniture">Furniture</option>
+      <option value="electronics">Electronics</option>
+      <option value="other">Other</option>
+    </select>
 
-    <label for="condition">Item Condition</label>
+    <label for="condition">Condition</label>
     <select id="condition" name="condition" required>
-      <option value="">-- Select --</option>
       <option value="new">New</option>
-      <option value="like_new">Like New</option>
+      <option value="like-new">Like New</option>
       <option value="used">Used</option>
     </select>
 
-    <label for="notes">Additional Notes</label>
-    <textarea id="notes" name="notes" rows="3" placeholder="Optional..."></textarea>
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+
+    <label for="location">Pickup Location</label>
+    <input type="text" id="location" name="location" required>
+
+    <label for="image">Upload Image (optional)</label>
+    <input type="file" id="image" name="image">
 
     <button type="submit">Submit Donation</button>
   </form>
 
+  <footer>
+    <p>&copy; 2025 Used Items Donation Platform</p>
+  </footer>
 </body>
 </html>
