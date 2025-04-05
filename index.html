@@ -3,21 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <title>Used Items Donation Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f9f9f9;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
     header {
       background-color: #2c3e50;
       color: white;
       padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background-color: #34495e;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      display: block;
+    }
+    nav a:hover {
+      background-color: #2c3e50;
     }
     section {
       padding: 40px;
+      text-align: center;
     }
     .button {
       background-color: #27ae60;
@@ -32,6 +51,13 @@
     .button:hover {
       background-color: #219150;
     }
+    footer {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: 50px;
+    }
   </style>
 </head>
 <body>
@@ -41,14 +67,22 @@
     <p>Give what you don't need. Help someone in need.</p>
   </header>
 
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="donations.html">Donations</a>
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </nav>
+
   <section>
-    <a href="login.html" class="button">Login</a>
-    <p style="text-align:center; margin-top:10px;">
-      Don't have an account? <a href="signup.html">Sign up here</a>
-    </p>    
-    <button class="button">View Donations</button>
-    <button class="button">Donate an Item</button>
+    <button class="button" onclick="location.href='login.html'">Login</button>
+    <button class="button" onclick="location.href='donations.html'">View Donations</button>
+    <button class="button" onclick="location.href='donate.html'">Donate an Item</button>
   </section>
+
+  <footer>
+    <p>&copy; 2025 Used Items Donation Platform | Contact us: info@donate.org</p>
+  </footer>
 
 </body>
 </html>
