@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Donate an Item</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header, footer {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+    form {
+      background-color: white;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label, input, textarea, select {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    input, textarea, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #27ae60;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #219150;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Donate an Item</h1>
+  </header>
+
+  <form action="#" method="post">
+    <label for="item-name">Item Name</label>
+    <input type="text" id="item-name" name="item-name" required>
+
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+      <option value="clothes">Clothes</option>
+      <option value="furniture">Furniture</option>
+      <option value="electronics">Electronics</option>
+      <option value="other">Other</option>
+    </select>
+
+    <label for="condition">Condition</label>
+    <select id="condition" name="condition" required>
+      <option value="new">New</option>
+      <option value="like-new">Like New</option>
+      <option value="used">Used</option>
+    </select>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+
+    <label for="location">Pickup Location</label>
+    <input type="text" id="location" name="location" required>
+
+    <label for="image">Upload Image (optional)</label>
+    <input type="file" id="image" name="image">
+
+    <button type="submit">Submit Donation</button>
+  </form>
+
+  <footer>
+    <p>&copy; 2025 Used Items Donation Platform</p>
+  </footer>
+</body>
+</html>

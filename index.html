@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Donation Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav {
+      background-color: #34495e;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    nav .nav-item {
+      position: relative;
+    }
+
+    nav a, .dropbtn {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      display: block;
+    }
+
+    nav a:hover, .dropbtn:hover {
+      background-color: #2c3e50;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #34495e;
+      min-width: 160px;
+      top: 100%;
+      left: 0;
+      z-index: 1000;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .dropdown-content a {
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .nav-item:hover .dropdown-content {
+      display: block;
+    }
+
+    section {
+      padding: 40px;
+      text-align: center;
+    }
+
+    .button {
+      background-color: #27ae60;
+      color: white;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    .button:hover {
+      background-color: #219150;
+    }
+
+    footer {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>ATTAYAKUM Donation Platform</h1>
+    <p>Give what you don't need. Help someone in need.</p>
+  </header>
+
+  <nav>
+    <div class="nav-item"><a href="index.html">Home</a></div>
+
+    <div class="nav-item">
+      <a href="#" class="dropbtn">Donations</a>
+      <div class="dropdown-content">
+        <a href="New_Donate.html">Add Donation</a>
+        <a href="Donations.html">View Donations</a>
+      </div>
+    </div>
+
+    <div class="nav-item"><a href="login.html">Login</a></div>
+    <div class="nav-item"><a href="signup.html">Register</a></div>
+  </nav>
+
+  <section>
+    <!-- الصفحة الرئيسية -->
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Attayakum Donation Platform | Contact us: info@donate.org</p>
+  </footer>
+
+</body>
+</html>
