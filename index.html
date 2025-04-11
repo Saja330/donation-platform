@@ -84,6 +84,128 @@
       margin-top: 50px;
     }
   </style>
+  
+  <style>
+    body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+   }
+
+   .about-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: auto;
+    }
+
+   .about-image {
+    flex: 1 1 40%;
+    max-width: 500px;
+    padding: 20px;
+    }
+
+   .about-image img {
+    width: 100%;
+    border-radius: 30px;
+    }
+
+   .about-content {
+    flex: 1 1 50%;
+    padding: 20px;
+    }
+
+   .about-content h2 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    }
+
+   .divider {
+    display: flex;
+    align-items: center;
+    margin: 10px 0 30px;
+    color: #2c3e50;
+    }
+
+   .divider::before,
+   .divider::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background:  #2c3e50;
+    margin: 0 10px;
+    }
+
+    .about-content p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    }
+
+    .about-content strong {
+    color: #2c3e50;
+    }
+  </style>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff;
+  }
+
+  .donate-section {
+    background-color: #f1f1f1;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .donate-container {
+  width: 100%; /* بدل max-width */
+  text-align: left;
+  padding: 0 10% 0 10%;
+  }
+
+  .donate-container h2 {
+    font-size: 34px;
+    font-weight: bold;
+    color: #1e1f26;
+    margin-bottom: 20px;
+  }
+
+  .donate-container p {
+    font-size: 18px;
+    color: #2f2f2f;
+    line-height: 1.8;
+    margin-bottom: 30px;
+  }
+
+  .donate-button {
+    background-color: #1e1f26;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+  }
+
+  .donate-button:hover {
+    background-color: #000;
+  }
+</style>
+
 </head>
 
 <body>
@@ -117,28 +239,61 @@
       </div>
     </section>
     
- 
-
- 
-  <section>
-    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
-      <div>
-        <img src="images/upcoming2.jpg" alt="وصف الصورة" style="max-width: 100%; height: auto;">
-        <h2>About Our Donation Platform</h2>
-        <p style="max-width: 800px; margin: auto; line-height: 1.8;">
-          Our donation platform is a humanitarian initiative aimed at connecting generous donors with individuals and families in need. We believe that giving should be simple, transparent, and impactful. Whether it's food, clothing, education support, or financial aid — every contribution matters. Join us in making a real difference and spreading hope where it's needed most.
-        </p>
+    <section class="about-section">
+      <div class="about-image">
+        <img src="images/upcoming2.jpg" alt="وصف الصورة">
       </div>
-      <div>
-  </section>
+      <div class="about-content">
+        <h2>About Us</h2>
+        <div class="divider">🌿🌿🌿</div>
+        <p><strong>(ATTAYAKUM) donation platform is a humanitarian initiative aimed at connecting generous donors with individuals and families in need. We believe that giving should be simple, transparent, and impactful.</strong></p>
+        <p>Our platform helps hungry peoples by donating them meals. Main objective of our platform is to reduce hunger.  Whether it's food, clothing, education support, or financial aid — every contribution matters.Because we know that food and clothes are needs.</p>
+        <p> Join us in making a real difference and spreading hope where it's needed most.</p>
+      </div>
+    </section>
 
-  <section class="section" id="about">
    
-  </section>
-  
+    <section class="donate-section">
+      <div class="donate-container">
+        <h2>Donate Today</h2>
+        <p>
+          Today, 690 million people around the world will go to bed on an empty stomach. But your gift means that one less child will be at risk of starvation tonight. Whether you decide to make a one-off donation or set up a monthly gift, you can change a life forever today. Often, one meal at the right time will be enough to make a difference between life and death.
+        </p>
+        <a href="New_Donate.html" class="donate-button">Donate Now</a>
+      </div>
+    </section>
 
-    
- 
+
+
+<!-- Contact Section -->
+<section style="display: flex; flex-wrap: wrap; padding: 40px 0;">
+  <!-- Left Column: Contact Info -->
+  <div style="flex: 1; min-width: 300px; padding: 40px;">
+    <h2 style="text-align: center;font-size: 32px;font-weight: bold;">Contact us</h2>
+    <div class="divider">🌿🌿🌿</div>
+    <div style="margin-top: 30px; font-size: 20px; text-align: left; padding-left: 25%;">
+      <p><strong>📞 Call us:</strong><br>(+966) 540074099 </p>
+      <p><strong>📧 E-mail:</strong><br>info@donate.org</p>
+      <p><strong>🕒 Working Hours:</strong><br>Mon - Sat (8.00am - 12.00pm)</p>
+    </div>
+  </div>
+
+  <!-- Right Column: Google Map -->
+  <div style="flex: 1; min-width: 300px; height: 400px; padding-right: 2%;">
+    <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.5344278393136!2d46.70384212461017!3d24.811390947219156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2efc8daaaaaaab%3A0xb6ca5a0d95885833!2z2KzYp9mF2LnYqSDYp9mE2KXZhdin2YUg2YXYrdmF2K8g2KjZhiDYs9i52YjYryDYp9mE2KXYs9mE2KfZhdmK2Kk!5e0!3m2!1sar!2ssa!4v1744369325508!5m2!1sar!2ssa"
+      width="100%"
+      height="100%"
+      style="border:0;"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+</section>
+
+
+
 
   <footer>
     <p>&copy; 2025 Attayakum Donation Platform | Contact us: info@donate.org</p>
