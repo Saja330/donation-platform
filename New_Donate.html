@@ -97,7 +97,8 @@
     <textarea id="description" name="description" rows="4" required></textarea>
 
     <label for="location">Pickup Location</label>
-    <input type="text" id="location" name="location" required>
+    <input type="text" id="location" name="location" required placeholder="Click to get your location">
+    <button type="button" onclick="getLocation()">📍 Use Location</button>
 
     <label for="image">Upload Image (optional)</label>
     <input type="file" id="image" name="image">
@@ -108,5 +109,29 @@
   <footer>
     <p>&copy; 2025 Used Items Donation Platform</p>
   </footer>
+
+  <script>
+    function getLocation() {
+      const locationInput = document.getElementById("location");
+  
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+  
+            // يمكنك استخدام API مثل Google Maps لتحويل الإحداثيات إلى عنوان إن أردت
+            locationInput.value = `Latitude: ${lat}, Longitude: ${lon}`;
+          },
+          function (error) {
+            alert("Unable to retrieve your location. Please check your browser permissions.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
+
 </body>
 </html>
