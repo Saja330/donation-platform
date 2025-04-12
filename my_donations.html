@@ -2,14 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My Donations</title>
+  <title>View Donations</title>
   <style>
-    body { font-family: Arial; margin: 20px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
     .pending { background-color: #fff3cd; }
     .approved { background-color: #d1e7dd; }
     .delivered { background-color: #cfe2ff; }
+    button {
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -19,34 +39,62 @@
     <thead>
       <tr>
         <th>Item</th>
+        <th>Category</th>
+        <th>Condition</th>
         <th>Date</th>
         <th>Status</th>
+        <th>Actions</th>
       </tr>
     </thead>
-    <tbody id="donationTable">
-      <!-- Data will be inserted by JavaScript -->
-    </tbody>
+    <tbody id="donationTable"></tbody>
   </table>
 
   <script>
-    const donations = [
-      { item: "Winter Jacket", date: "2025-04-09", status: "pending" },
-      { item: "Books Set", date: "2025-04-05", status: "approved" },
-      { item: "Sofa", date: "2025-03-28", status: "delivered" }
-    ];
+    let donations = JSON.parse(localStorage.getItem("donations")) || [];
 
-    const table = document.getElementById("donationTable");
-    donations.forEach(donation => {
-      const row = document.createElement("tr");
-      row.className = donation.status;
-      row.innerHTML = `
-        <td>${donation.item}</td>
-        <td>${donation.date}</td>
-        <td>${donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}</td>
-      `;
-      table.appendChild(row);
-    });
+    function renderTable() {
+      const table = document.getElementById("donationTable");
+      table.innerHTML = "";
+      donations.forEach((donation, index) => {
+        const row = document.createElement("tr");
+        row.className = donation.status;
+        row.innerHTML = `
+          <td>${donation.item}</td>
+          <td>${donation.category}</td>
+          <td>${donation.condition}</td>
+          <td>${donation.date}</td>
+          <td>${donation.status}</td>
+          <td>
+            <button onclick="editStatus(${index})">Edit</button>
+            <button onclick="deleteDonation(${index})">Delete</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function editStatus(index) {
+      const newStatus = prompt("Enter new status (pending, approved, delivered):", donations[index].status);
+      if (newStatus && ["pending", "approved", "delivered"].includes(newStatus.toLowerCase())) {
+        donations[index].status = newStatus.toLowerCase();
+        localStorage.setItem("donations", JSON.stringify(donations));
+        renderTable();
+      } else {
+        alert("Invalid status.");
+      }
+    }
+
+    function deleteDonation(index) {
+      if (confirm("Are you sure you want to delete this donation?")) {
+        donations.splice(index, 1);
+        localStorage.setItem("donations", JSON.stringify(donations));
+        renderTable();
+      }
+    }
+
+    renderTable();
   </script>
 
 </body>
 </html>
+
