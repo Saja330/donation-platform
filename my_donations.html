@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Donations</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    .pending { background-color: #fff3cd; }
+    .approved { background-color: #d1e7dd; }
+    .delivered { background-color: #cfe2ff; }
+  </style>
+</head>
+<body>
+
+  <h2>My Donations</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="donationTable">
+      <!-- Data will be inserted by JavaScript -->
+    </tbody>
+  </table>
+
+  <script>
+    const donations = [
+      { item: "Winter Jacket", date: "2025-04-09", status: "pending" },
+      { item: "Books Set", date: "2025-04-05", status: "approved" },
+      { item: "Sofa", date: "2025-03-28", status: "delivered" }
+    ];
+
+    const table = document.getElementById("donationTable");
+    donations.forEach(donation => {
+      const row = document.createElement("tr");
+      row.className = donation.status;
+      row.innerHTML = `
+        <td>${donation.item}</td>
+        <td>${donation.date}</td>
+        <td>${donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}</td>
+      `;
+      table.appendChild(row);
+    });
+  </script>
+
+</body>
+</html>
