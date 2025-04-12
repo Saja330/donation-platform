@@ -52,7 +52,25 @@
   </style>
 </head>
 <body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAmJlkOLunsbo2xqNAa8tB-NFkPV11lDjY",
+    authDomain: "donation-platform-ca7aa.firebaseapp.com",
+    projectId: "donation-platform-ca7aa",
+    storageBucket: "donation-platform-ca7aa.firebasestorage.app",
+    messagingSenderId: "895069919066",
+    appId: "1:895069919066:web:d4cb87e79f8e3e34fa8563"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
   <header>
     <nav>
       <div style="display: flex; align-items: center; padding: 10px 20px; flex-grow: 1;">
