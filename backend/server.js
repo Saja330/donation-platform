@@ -1,18 +1,24 @@
-// ... [بقية المتطلبات كما هي]
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const app = express();
+const path = require('path'); // لتقديم ملفات الواجهة
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// connect with mongDB
-mongoose.connect(process.env.MONGO_URI) // اذا راح تنزلين المجلد هنا تستبدلينه برابط الداتابيس 
-  .then(() => console.log("  Connected to MongoDB !"))
-  .catch(err => console.error("  MongoDB connection error:", err));
+//  frontend files from public/
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Schemas
+// connecting with MongoDB using env identefire
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ Connected to MongoDB"))
+.catch(err => console.error("❌ MongoDB connection error:", err));
+
+//  Schemas
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -50,7 +56,9 @@ const messageSchema = new mongoose.Schema({
 });
 const Message = mongoose.model('Message', messageSchema);
 
-// Registration api
+// Endpoints
+
+// تسجيل مستخدم
 app.post('/api/register', async (req, res) => {
   try {
     const user = new User(req.body);
@@ -61,7 +69,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Sign in
+// تسجيل الدخول
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -81,7 +89,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// add donation
+// إضافة تبرع
 app.post('/api/donations', async (req, res) => {
   try {
     const donation = new Donation(req.body);
@@ -92,7 +100,7 @@ app.post('/api/donations', async (req, res) => {
   }
 });
 
-// get all donations 
+//all donations
 app.get('/api/donations', async (req, res) => {
   try {
     const donations = await Donation.find();
@@ -102,7 +110,7 @@ app.get('/api/donations', async (req, res) => {
   }
 });
 
-//   git user's donation
+// donor's donations
 app.get('/api/donations/:email', async (req, res) => {
   try {
     const donations = await Donation.find({ email: req.params.email });
@@ -112,7 +120,7 @@ app.get('/api/donations/:email', async (req, res) => {
   }
 });
 
-// request a donation
+// request donation
 app.post('/api/request', async (req, res) => {
   const { itemId, receiverId } = req.body;
   try {
@@ -135,7 +143,7 @@ app.post('/api/request', async (req, res) => {
   }
 });
 
-//   عرض تبرعات مع حالة الطلب
+// عرض التبرعات مع الطلبات
 app.get('/api/donations-with-requests', async (req, res) => {
   try {
     const donations = await Donation.find();
@@ -154,14 +162,19 @@ app.get('/api/donations-with-requests', async (req, res) => {
   }
 });
 
-//   get recievers requests
+// reciever requests
 app.get('/api/requests-by-user/:userId', async (req, res) => {
   try {
     const requests = await Request.find({ receiverId: req.params.userId }).populate('itemId');
     const formatted = requests.map(r => ({
       _id: r._id,
       timestamp: r.timestamp,
-      donation: r.itemId
+      donation: {
+        item: r.itemId?.item,
+        location: r.itemId?.location,
+        email: r.itemId?.email,
+        _id: r.itemId?._id
+      }
     }));
     res.json(formatted);
   } catch (err) {
@@ -169,7 +182,7 @@ app.get('/api/requests-by-user/:userId', async (req, res) => {
   }
 });
 
-//   الرسائل
+// الرسائل
 app.get('/api/messages/:userId', async (req, res) => {
   try {
     const messages = await Message.find({
@@ -194,7 +207,13 @@ app.post('/api/messages', async (req, res) => {
   }
 });
 
-// servrer runinng
-app.listen(3000, () => {
-  console.log("🚀 Server running on http://localhost:3000");
+// when visiting / it redirect index.html from public/
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+//  running the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
