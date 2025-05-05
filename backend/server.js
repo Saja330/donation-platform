@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // connect with mongDB
-mongoose.connect('mongodb+srv://Admin:Pass12345word@attayakumdb.erjxbsq.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGO_URI) // اذا راح تنزلين المجلد هنا تستبدلينه برابط الداتابيس 
   .then(() => console.log("  Connected to MongoDB !"))
   .catch(err => console.error("  MongoDB connection error:", err));
 
