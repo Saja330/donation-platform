@@ -1,208 +1,74 @@
-*{
-  margin: 0;
-  padding: 0;
-}
-
-header{
-  width: 100%;
-  height: 70px;
-  background-color: #2c3e50;
-  box-shadow: 0px 0px 12px #2c3e50;
- 
-}
-
-header button{
-    width: 140px;
-    padding: 12px;
-    margin-top: 10px;
-    border:none;
-    background: none; 
-    outline: none;
-    font-size: 18px;
-    box-shadow: 0px 0px 8px white;
-    font-weight: bold;
-}
-header button:hover{
-   color:  #2c3e50;
-   box-shadow: 0px 0px 15px silver;
-}
-header img{
-  width: 100px;
-  float: left;
-  margin-top: 5px;
-  margin-left: 8px;
-}
-
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f9f9f9;
   margin: 0;
   padding: 0;
+  font-family: 'Cairo', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  direction: rtl;
 }
 
-
-.hero-section {
-  position: relative;
-  background-image: url('images/volunteer_img.jpg'); /* ضع هنا مسار الصورة التي أرفقتها */
-  background-size: cover;
-  background-position: center;
-  height: 30vh;
+header {
+  background-color: #f57c00;
   color: white;
-  font-family: 'Tajawal', sans-serif;
-}
-
-.hero-overlay {
-  background-color: rgba(0, 91, 105, 0.6); /* طبقة شفافة باللون الأزرق الداكن */
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 1rem;
   text-align: center;
-  padding: 0 20px;
 }
-
-.hero-content {
-  max-width: 700px;
-}
-
-.hero-content h2 {
-  font-size: 32px;
-  margin-bottom: 20px;
-}
-
-.hero-content p {
-  font-size: 20px;
-  margin-bottom: 30px;
-  line-height: 1.6;
-}
-
-.cta-button {
-  background-color: #00d1b2;
-  color: white;
-  padding: 12px 24px;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 18px;
-  transition: background-color 0.3s ease;
-}
-
-.cta-button:hover {
-  background-color: #00b89c;
-}
-
-
-
 
 nav {
-  background-color: #34495e;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 
-nav a, .dropbtn {
+nav a {
   color: white;
-  padding: 14px 20px;
   text-decoration: none;
-  display: block;
+  margin: 0 10px;
+  font-weight: bold;
 }
 
-nav a:hover, .dropbtn:hover {
-  background-color: #2c3e50;
+nav a:hover {
+  text-decoration: underline;
 }
 
-.nav-item {
-  position: relative;
+main {
+  padding: 2rem;
 }
 
-.dropdown-content {
-  display: none;
-  position: relative;
-  background-color: #34495e;
-  min-width: 160px;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-}
-
-.dropdown-content a {
-  color: white;
-  padding: 12px 16px;
-  text-align: left;
-  text-decoration: none;
-  display: block;
-}
-
-.nav-item:hover .dropdown-content {
-  display: block;
-}
-
-section {
-  padding: 40px;
-  text-align: center;
-}
-
-.button {
-  background-color: #27ae60;
-  color: white;
-  padding: 15px 25px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 10px;
-}
-
-.button:hover {
-  background-color: #219150;
-}
-
-footer {
-  background-color: #2c3e50;
-  color: white;
-  text-align: center;
-  padding: 15px;
-  margin-top: 50px;
-}
-
-/* login form styles */
-.login-container {
-  background-color: white;
-  padding: 30px;
+.form-container {
+  max-width: 400px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  margin: auto;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.login-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #2c3e50;
-}
-
-input[type="email"],
-input[type="password"] {
+input, textarea, select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.8rem;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 button {
-  width: 100%;
-  padding: 10px;
-  background-color: #27ae60;
+  background-color: #f57c00;
   color: white;
+  padding: 0.8rem 1.2rem;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 button:hover {
-  background-color: #219150;
+  background-color: #e65100;
+}
+
+.donation, .message, .request {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.05);
 }

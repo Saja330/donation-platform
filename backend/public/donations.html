@@ -1,130 +1,85 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>جميع التبرعات - عطاياكم</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Cairo&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>التبرعات المتاحة</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css?family=Cairo&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Cairo', sans-serif;
     }
+    .donation-card {
+      border: 1px solid #ccc;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
   </style>
 </head>
-<body class="bg-light">
+<body>
+  <header>
+    <h1>قائمة التبرعات</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="login.html" id="loginLink">تسجيل الدخول</a>
+      <a href="register.html" id="registerLink">تسجيل</a>
+      <a href="donor-dashboard.html" id="dashboardLink" style="display:none;">لوحة التحكم</a>
+      <span id="welcomeUser"></span>
+    </nav>
+  </header>
 
-  <!--      شريط التنقل -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="index.html">عطاياكم</a>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navLinks">
-          <!-- يتم ملؤها ديناميكيًا -->
-        </ul>
-        <span class="navbar-text text-white me-3" id="username">مرحبًا</span>
-        <a href="logout.html" class="btn btn-outline-light" id="logoutBtn" style="display: none;">تسجيل الخروج</a>
-      </div>
-    </div>
-  </nav>
+  <main id="donationList"></main>
 
-  <!--      محتوى الصفحة -->
-  <div class="container mt-5">
-    <h2 class="text-center mb-4">جميع التبرعات المتاحة</h2>
-    <div id="donations-container" class="row g-4"></div>
-  </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-    const userType = localStorage.getItem('userType');
-    const userId = localStorage.getItem('userId');
-    const userName = localStorage.getItem('userName');
-    const navLinks = document.getElementById("navLinks");
-    const logoutBtn = document.getElementById("logoutBtn");
+    const BASE_URL = "https://donation-platform-vpnp.onrender.com";
+    const userType = localStorage.getItem("userType");
+    const userId = localStorage.getItem("userId");
+    const userName = localStorage.getItem("userName");
 
-    const username = document.getElementById("username");
     if (userName) {
-      username.textContent = "مرحبًا، " + userName;
-      logoutBtn.style.display = "inline-block";
-
-      if (userType === 'donor') {
-        navLinks.innerHTML = `<li class="nav-item"><a class="nav-link" href="donor-dashboard.html">لوحة المتبرع</a></li>`;
-      } else if (userType === 'needy') {
-        navLinks.innerHTML = `<li class="nav-item"><a class="nav-link" href="needy-dashboard.html">لوحة المحتاج</a></li>`;
-      }
-    } else {
-      username.style.display = "none";
-      logoutBtn.style.display = "none";
-      navLinks.innerHTML = `
-        <li class="nav-item"><a class="nav-link" href="login.html">تسجيل الدخول</a></li>
-        <li class="nav-item"><a class="nav-link" href="register.html">إنشاء حساب</a></li>
-      `;
+      document.getElementById("welcomeUser").innerText = "مرحباً " + userName;
+      document.getElementById("loginLink").style.display = "none";
+      document.getElementById("registerLink").style.display = "none";
+      document.getElementById("dashboardLink").style.display = "inline";
     }
 
-    async function fetchDonations() {
-      try {
-        const res = await axios.get('http://localhost:3000/api/donations-with-requests');
-        const donations = res.data;
-        const container = document.getElementById('donations-container');
-        container.innerHTML = '';
+    const loadDonations = async () => {
+      const res = await axios.get(`${BASE_URL}/api/donations-with-requests`);
+      const donations = res.data;
 
-        donations.forEach(d => {
-          const col = document.createElement('div');
-          col.className = 'col-md-4';
+      const container = document.getElementById("donationList");
+      donations.forEach(donation => {
+        const card = document.createElement("div");
+        card.className = "donation-card";
+        card.innerHTML = `
+          <h3>${donation.item}</h3>
+          <p>الوصف: ${donation.description}</p>
+          <p>الحالة: ${donation.status}</p>
+        `;
 
-          const card = document.createElement('div');
-          card.className = 'card shadow-sm';
+        if (userType === "needy" && donation.status === "available") {
+          const btn = document.createElement("button");
+          btn.innerText = "طلب التبرع";
+          btn.onclick = async () => {
+            await axios.post(`${BASE_URL}/api/request`, {
+              itemId: donation._id,
+              receiverId: userId
+            });
+            alert("تم إرسال الطلب");
+            location.reload();
+          };
+          card.appendChild(btn);
+        } else if (donation.status === "requested") {
+          card.innerHTML += `<p><strong>تم الطلب</strong></p>`;
+        }
 
-          if (d.image) {
-            const img = document.createElement('img');
-            img.src = d.image;
-            img.className = 'card-img-top';
-            img.alt = d.item;
-            card.appendChild(img);
-          }
+        container.appendChild(card);
+      });
+    };
 
-          const body = document.createElement('div');
-          body.className = 'card-body';
-          body.innerHTML = `
-            <h5 class="card-title">${d.item}</h5>
-            <p class="card-text">${d.description?.substring(0, 80) || ''}</p>
-            <p class="text-muted">الفئة: ${d.category}</p>
-            <p class="text-${d.requestStatus === 'requested' ? 'danger' : 'success'}">
-              الحالة: ${d.requestStatus === 'requested' ? 'تم الطلب' : 'متاح'}
-            </p>
-          `;
-
-          if (userType === 'needy' && d.requestStatus !== 'requested') {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-primary w-100';
-            btn.innerText = 'طلب هذا التبرع';
-            btn.onclick = async () => {
-              try {
-                await axios.post('http://localhost:3000/api/request', {
-                  itemId: d._id,
-                  receiverId: userId
-                });
-                alert('تم إرسال طلبك بنجاح');
-                fetchDonations();
-              } catch (err) {
-                alert('حدث خطأ أثناء إرسال الطلب');
-              }
-            };
-            body.appendChild(btn);
-          }
-
-          card.appendChild(body);
-          col.appendChild(card);
-          container.appendChild(col);
-        });
-
-      } catch (error) {
-        console.error('خطأ في جلب التبرعات:', error);
-      }
-    }
-
-    fetchDonations();
+    loadDonations();
   </script>
-
 </body>
 </html>
