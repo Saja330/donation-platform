@@ -18,11 +18,26 @@
   <!--      شريط التنقل -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
+      <img src="images/logo.jpg" alt="Logo" style="width: 40px; height: auto; margin-right: 20px;">
       <a class="navbar-brand" href="index.html">عطاياكم</a>
+  
+      <!-- زر التبديل للهاتف -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
       <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navLinks">
           <!-- يتم ملؤها ديناميكيًا -->
         </ul>
+  
+        <!--  شريط البحث -->
+          <!--  عند ربطه بقاعده البيانات نحتاج استخدام داله لاستدعاء جميع العناصر الموجوده في المنصة-->
+        <form class="d-flex mx-3 w-50" role="search">
+          <input class="form-control me-2" type="search" placeholder="ادخل كلمة البحث" aria-label="بحث">
+          <button class="btn btn-outline-light" type="submit">بحث</button>
+        </form>
+  
         <span class="navbar-text text-white me-3" id="username">مرحبًا</span>
         <a href="logout.html" class="btn btn-outline-light" id="logoutBtn" style="display: none;">تسجيل الخروج</a>
       </div>
