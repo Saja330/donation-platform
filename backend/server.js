@@ -1,23 +1,30 @@
-// ... [بقية المتطلبات كما هي]
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const app = express();
+const path = require('path');
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// connect with mongDB
-mongoose.connect('mongodb+srv://Admin:Pass12345word@attayakumdb.erjxbsq.mongodb.net/?retryWrites=true&w=majority')
-  .then(() => console.log("  Connected to MongoDB !"))
-  .catch(err => console.error("  MongoDB connection error:", err));
+// ✅ تقديم ملفات الواجهة (frontend)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Schemas
+// ✅ الاتصال بقاعدة بيانات Mongo محليًا أو من خلال env متغير
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/attayakum', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ Connected to MongoDB"))
+.catch(err => console.error("❌ MongoDB connection error:", err));
+
+// ✅ Schemas
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String,
-  type: { type: String, enum: ['donor', 'needy'] }
+  type: { type: String, enum: ['donor', 'needy'] },
+  nationalId: String // للمحتاجين فقط
 });
 const User = mongoose.model('User', userSchema);
 
@@ -41,16 +48,7 @@ const requestSchema = new mongoose.Schema({
 });
 const Request = mongoose.model('Request', requestSchema);
 
-const messageSchema = new mongoose.Schema({
-  donationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation' },
-  senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  receiverId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  content: String,
-  timestamp: { type: Date, default: Date.now }
-});
-const Message = mongoose.model('Message', messageSchema);
-
-// Registration api
+// ✅ تسجيل مستخدم
 app.post('/api/register', async (req, res) => {
   try {
     const user = new User(req.body);
@@ -61,7 +59,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Sign in
+// ✅ تسجيل الدخول
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -81,7 +79,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// add donation
+// ✅ إضافة تبرع
 app.post('/api/donations', async (req, res) => {
   try {
     const donation = new Donation(req.body);
@@ -92,7 +90,7 @@ app.post('/api/donations', async (req, res) => {
   }
 });
 
-// get all donations 
+// ✅ جميع التبرعات
 app.get('/api/donations', async (req, res) => {
   try {
     const donations = await Donation.find();
@@ -102,7 +100,7 @@ app.get('/api/donations', async (req, res) => {
   }
 });
 
-//   git user's donation
+// ✅ تبرعات مستخدم معين حسب بريده
 app.get('/api/donations/:email', async (req, res) => {
   try {
     const donations = await Donation.find({ email: req.params.email });
@@ -112,7 +110,7 @@ app.get('/api/donations/:email', async (req, res) => {
   }
 });
 
-// request a donation
+// ✅ طلب تبرع
 app.post('/api/request', async (req, res) => {
   const { itemId, receiverId } = req.body;
   try {
@@ -120,48 +118,25 @@ app.post('/api/request', async (req, res) => {
     await newRequest.save();
     await Donation.findByIdAndUpdate(itemId, { status: 'requested' });
 
-    const needy = await User.findById(receiverId);
-    const msg = new Message({
-      donationId: itemId,
-      senderId: receiverId,
-      receiverId: null,
-      content: `طلب ${needy.name} هذا التبرع`
-    });
-    await msg.save();
-
     res.json({ message: "تم الطلب" });
   } catch (error) {
     res.status(500).json({ message: "فشل الطلب" });
   }
 });
 
-//   عرض تبرعات مع حالة الطلب
-app.get('/api/donations-with-requests', async (req, res) => {
-  try {
-    const donations = await Donation.find();
-    const requests = await Request.find().populate('receiverId');
-    const enriched = donations.map(donation => {
-      const req = requests.find(r => r.itemId.toString() === donation._id.toString());
-      return {
-        ...donation.toObject(),
-        requestedBy: req ? req.receiverId?.name : null,
-        requestStatus: req ? 'requested' : 'available'
-      };
-    });
-    res.json(enriched);
-  } catch (err) {
-    res.status(500).json({ error: "فشل في جلب التبرعات" });
-  }
-});
-
-//   get recievers requests
+// ✅ جلب طلبات مستخدم محتاج
 app.get('/api/requests-by-user/:userId', async (req, res) => {
   try {
     const requests = await Request.find({ receiverId: req.params.userId }).populate('itemId');
     const formatted = requests.map(r => ({
       _id: r._id,
       timestamp: r.timestamp,
-      donation: r.itemId
+      donation: {
+        item: r.itemId?.item,
+        location: r.itemId?.location,
+        email: r.itemId?.email,
+        _id: r.itemId?._id
+      }
     }));
     res.json(formatted);
   } catch (err) {
@@ -169,32 +144,13 @@ app.get('/api/requests-by-user/:userId', async (req, res) => {
   }
 });
 
-//   الرسائل
-app.get('/api/messages/:userId', async (req, res) => {
-  try {
-    const messages = await Message.find({
-      $or: [
-        { senderId: req.params.userId },
-        { receiverId: req.params.userId }
-      ]
-    }).populate('senderId receiverId donationId');
-    res.json(messages);
-  } catch (err) {
-    res.status(500).json({ error: "فشل في جلب الرسائل" });
-  }
+// ✅ المسار الافتراضي للصفحة الرئيسية
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.post('/api/messages', async (req, res) => {
-  try {
-    const msg = new Message(req.body);
-    await msg.save();
-    res.json({ message: "تم إرسال الرسالة" });
-  } catch (err) {
-    res.status(500).json({ error: "فشل في إرسال الرسالة" });
-  }
-});
-
-// servrer runinng
-app.listen(3000, () => {
-  console.log("🚀 Server running on http://localhost:3000");
+// ✅ تشغيل السيرفر
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
