@@ -20,31 +20,29 @@
     <div class="container-fluid">
       <img src="images/logo.jpg" alt="Logo" style="width: 40px; height: auto; margin-right: 20px;">
       <a class="navbar-brand" href="index.html">عطاياكم</a>
-  
+
       <!-- زر التبديل للهاتف -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
         <span class="navbar-toggler-icon"></span>
       </button>
-  
+
       <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navLinks">
           <!-- يتم ملؤها ديناميكيًا -->
         </ul>
-  
-        <!--  شريط البحث -->
-          <!--  عند ربطه بقاعده البيانات نحتاج استخدام داله لاستدعاء جميع العناصر الموجوده في المنصة-->
+
         <form class="d-flex mx-3 w-50" role="search">
           <input class="form-control me-2" type="search" placeholder="ادخل كلمة البحث" aria-label="بحث">
           <button class="btn btn-outline-light" type="submit">بحث</button>
         </form>
-  
+
         <span class="navbar-text text-white me-3" id="username">مرحبًا</span>
         <a href="logout.html" class="btn btn-outline-light" id="logoutBtn" style="display: none;">تسجيل الخروج</a>
       </div>
     </div>
   </nav>
 
-  <!--      محتوى الصفحة -->
+
   <div class="container mt-5">
     <h2 class="text-center mb-4">جميع التبرعات المتاحة</h2>
     <div id="donations-container" class="row g-4"></div>
@@ -56,37 +54,37 @@
     const userName = localStorage.getItem('userName');
     const navLinks = document.getElementById("navLinks");
     const logoutBtn = document.getElementById("logoutBtn");
-  
+
     const username = document.getElementById("username");
     if (userName) {
       username.textContent = "مرحبًا، " + userName;
       logoutBtn.style.display = "inline-block";
-  
       if (userType === 'donor') {
         navLinks.innerHTML = `<li class="nav-item"><a class="nav-link" href="donor-dashboard.html">لوحة المتبرع</a></li>`;
       } else if (userType === 'needy') {
         navLinks.innerHTML = `<li class="nav-item"><a class="nav-link" href="needy-dashboard.html">لوحة المستفيد</a></li>`;
       }
     }
-  
+
     // ✅ جلب التبرعات من السيرفر
     axios.get('/api/donations')
       .then(response => {
         const donations = response.data;
         const container = document.getElementById('donations-container');
         container.innerHTML = '';
-  
+
         donations.forEach(donation => {
           const card = document.createElement('div');
           card.className = 'col-md-4';
-  
+
           card.innerHTML = `
             <div class="card h-100 shadow-sm">
+              ${donation.image ? `<img src="${donation.image}" class="card-img-top" alt="صورة التبرع">` : ''}
               <div class="card-body">
-                <h5 class="card-title">${donation.title}</h5>
+                <h5 class="card-title">${donation.item}</h5>
                 <p class="card-text">${donation.description}</p>
                 <p class="card-text"><strong>الفئة:</strong> ${donation.category}</p>
-                <p class="card-text"><strong>الكمية:</strong> ${donation.quantity}</p>
+
               </div>
             </div>
           `;
@@ -97,6 +95,6 @@
         console.error('حدث خطأ أثناء جلب التبرعات:', error);
       });
   </script>
-  
+
 </body>
 </html>

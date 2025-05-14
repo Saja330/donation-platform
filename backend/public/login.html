@@ -60,9 +60,10 @@
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     try {
-      const response = await axios.post('/api/users/login', { email, password });
-      const user = response.data;
+      const response = await axios.post('/api/login', { email, password }); 
+       const user = response.data;
       localStorage.setItem('userId', user._id);
+      localStorage.setItem('userEmail', user.email);
       localStorage.setItem('userType', user.role);
       localStorage.setItem('userName', user.name);
       window.location.href = user.role === 'donor' ? 'donor-dashboard.html' : 'needy-dashboard.html';

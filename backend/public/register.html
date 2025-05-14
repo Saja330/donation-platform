@@ -75,9 +75,9 @@
     const role = document.getElementById('role').value;
 
     try {
-      await axios.post('/api/users/register', {
-        name, email, password, role
-      });
+
+      await axios.post('/api/register', {name, email, password, role  });
+
       alert('تم التسجيل بنجاح!');
       window.location.href = 'login.html';
     } catch (error) {

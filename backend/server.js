@@ -77,12 +77,12 @@ app.post('/api/login', async (req, res) => {
     if (!user) return res.status(401).json({ message: "بيانات غير صحيحة" });
 
     res.json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        type: user.type
-      }
+
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.type
+
     });
   } catch (err) {
     res.status(500).json({ error: "فشل تسجيل الدخول" });

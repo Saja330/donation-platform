@@ -75,6 +75,7 @@
 
   <script>
     document.getElementById('donationForm').addEventListener('submit', async function (e) {
+      HEAD
       e.preventDefault();
   
       const title = document.getElementById('title').value;
@@ -97,6 +98,33 @@
         console.error(error);
       }
     });
+
+  e.preventDefault();
+
+  const item = document.getElementById('title').value;
+  const category = document.getElementById('category').value;
+  const description = document.getElementById('description').value;
+  const image = document.getElementById('image').value;
+  const location = document.getElementById('location').value;
+  const email = localStorage.getItem('userEmail'); // تأكدي أنه تم تخزينه بعد تسجيل الدخول
+
+  try {
+    const response = await axios.post('/api/donations', {
+      item,
+      category,
+      description,
+      image,
+      location,
+      email
+    });
+
+    alert('تمت إضافة التبرع بنجاح!');
+    window.location.href = '/donor-dashboard.html';
+  } catch (error) {
+    alert('حدث خطأ أثناء الإضافة');
+    console.error(error);
+  }
+
   </script>
   
 
