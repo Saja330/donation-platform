@@ -1,7 +1,7 @@
-*{
-  margin: 0;
-  padding: 0;
+* {
+  box-sizing: border-box;
 }
+
 
 header{
   width: 100%;
@@ -206,3 +206,26 @@ button {
 button:hover {
   background-color: #219150;
 }
+/* dropdown lists overflow*/
+select {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* if there is any item make it invisible*/
+body, .container, .form-group, form {
+  overflow: visible !important;
+}
+select.form-select {
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  min-height: 40px;
+}
+select.form-select {
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 9999;
+}
+
