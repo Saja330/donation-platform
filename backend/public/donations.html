@@ -54,8 +54,8 @@
     const userName = localStorage.getItem('userName');
     const navLinks = document.getElementById("navLinks");
     const logoutBtn = document.getElementById("logoutBtn");
-
     const username = document.getElementById("username");
+   
     if (userName) {
       username.textContent = "مرحبًا، " + userName;
       logoutBtn.style.display = "inline-block";
@@ -66,7 +66,7 @@
       }
     }
 
-    // ✅ جلب التبرعات من السيرفر
+    //  جلب التبرعات من السيرفر
     axios.get('/api/donations')
       .then(response => {
         const donations = response.data;
@@ -74,26 +74,50 @@
         container.innerHTML = '';
 
         donations.forEach(donation => {
-          const card = document.createElement('div');
-          card.className = 'col-md-4';
+  const card = document.createElement('div');
+  card.className = 'col-md-4';
 
-          card.innerHTML = `
-            <div class="card h-100 shadow-sm">
-              ${donation.image ? `<img src="${donation.image}" class="card-img-top" alt="صورة التبرع">` : ''}
-              <div class="card-body">
-                <h5 class="card-title">${donation.item}</h5>
-                <p class="card-text">${donation.description}</p>
-                <p class="card-text"><strong>الفئة:</strong> ${donation.category}</p>
+  card.innerHTML = `
+    <div class="card h-100 shadow-sm">
+      ${donation.image ? `<img src="${donation.image}" class="card-img-top" alt="صورة التبرع">` : ''}
+      <div class="card-body">
+        <h5 class="card-title">${donation.item}</h5>
+        <p class="card-text">${donation.description}</p>
+        <p class="card-text"><strong>الفئة:</strong> ${donation.category}</p>
+      </div>
+    </div>
+  `;
 
-              </div>
-            </div>
-          `;
-          container.appendChild(card);
-        });
+  //  أضف الزر فقط إذا كان المستخدم needy
+  if (userType === 'needy') {
+    const button = document.createElement('button');
+    button.className = 'btn btn-success w-100 mt-2';
+    button.textContent = 'طلب التبرع';
+    button.onclick = () => requestDonation(donation._id);
+    card.appendChild(button);
+  }
+
+  container.appendChild(card);
+});
+
       })
       .catch(error => {
         console.error('حدث خطأ أثناء جلب التبرعات:', error);
       });
+
+  function requestDonation(donationId) {
+  const userId = localStorage.getItem('userId');
+  axios.post('/api/request', {
+    itemId: donationId,
+    receiverId: userId
+  })
+  .then(res => alert("تم إرسال الطلب"))
+  .catch(err => {
+    alert("فشل في إرسال الطلب");
+    console.error(err);
+  });
+}
+
   </script>
 
 </body>

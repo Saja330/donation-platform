@@ -207,6 +207,18 @@ app.post('/api/messages', async (req, res) => {
   }
 });
 
+app.get('/api/donations/user/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: "المستخدم غير موجود" });
+
+    const donations = await Donation.find({ email: user.email });
+    res.json(donations);
+  } catch (err) {
+    res.status(500).json({ error: "فشل في جلب تبرعات المستخدم" });
+  }
+});
+
 // when visiting / it redirect index.html from public/
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
