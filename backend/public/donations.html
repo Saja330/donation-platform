@@ -32,11 +32,10 @@
         </ul>
   
         <!--  شريط البحث -->
-          <!--  عند ربطه بقاعده البيانات نحتاج استخدام داله لاستدعاء جميع العناصر الموجوده في المنصة-->
-        <form class="d-flex mx-3 w-50" role="search">
-          <input class="form-control me-2" type="search" placeholder="ادخل كلمة البحث" aria-label="بحث">
-          <button class="btn btn-outline-light" type="submit">بحث</button>
-        </form>
+  <form class="d-flex mx-3 w-50" role="search" onsubmit="handleSearch(event)">
+    <input id="searchInput" class="form-control me-2" type="search" placeholder="ابحث عن عنصر مثل: ملابس، كتب..." aria-label="بحث">
+    <button class="btn btn-outline-light" type="submit">بحث</button>
+  </form>
   
         <span class="navbar-text text-white me-3" id="username">مرحبًا</span>
         <a href="logout.html" class="btn btn-outline-light" id="logoutBtn" style="display: none;">تسجيل الخروج</a>
@@ -140,6 +139,99 @@
 
     fetchDonations();
   </script>
+
+<script>
+  let allDonations = []; // تخزين كل التبرعات بشكل مؤقت
+
+  async function fetchDonations() {
+    try {
+      const res = await axios.get('http://localhost:3000/api/donations-with-requests');
+      allDonations = res.data; // تخزين التبرعات
+      renderDonations(allDonations); // عرض الكل
+    } catch (error) {
+      console.error('خطأ في جلب التبرعات:', error);
+    }
+  }
+
+  function renderDonations(donations) {
+    const container = document.getElementById('donations-container');
+    container.innerHTML = '';
+
+    if (donations.length === 0) {
+      container.innerHTML = '<p class="text-center text-muted">لا توجد نتائج مطابقة.</p>';
+      return;
+    }
+
+    donations.forEach(d => {
+      const col = document.createElement('div');
+      col.className = 'col-md-4';
+
+      const card = document.createElement('div');
+      card.className = 'card shadow-sm';
+
+      if (d.image) {
+        const img = document.createElement('img');
+        img.src = d.image;
+        img.className = 'card-img-top';
+        img.alt = d.item;
+        card.appendChild(img);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      body.innerHTML = `
+        <h5 class="card-title">${d.item}</h5>
+        <p class="card-text">${d.description?.substring(0, 80) || ''}</p>
+        <p class="text-muted">الفئة: ${d.category}</p>
+        <p class="text-${d.requestStatus === 'requested' ? 'danger' : 'success'}">
+          الحالة: ${d.requestStatus === 'requested' ? 'تم الطلب' : 'متاح'}
+        </p>
+      `;
+
+      if (userType === 'needy' && d.requestStatus !== 'requested') {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-primary w-100';
+        btn.innerText = 'طلب هذا التبرع';
+        btn.onclick = async () => {
+          try {
+            await axios.post('http://localhost:3000/api/request', {
+              itemId: d._id,
+              receiverId: userId
+            });
+            alert('تم إرسال طلبك بنجاح');
+            fetchDonations(); // تحديث القائمة
+          } catch (err) {
+            alert('حدث خطأ أثناء إرسال الطلب');
+          }
+        };
+        body.appendChild(btn);
+      }
+
+      card.appendChild(body);
+      col.appendChild(card);
+      container.appendChild(col);
+    });
+  }
+
+  // دالة البحث
+  function handleSearch(event) {
+    event.preventDefault();
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (keyword === '') {
+      renderDonations(allDonations); // عرض الكل
+      return;
+    }
+    const filtered = allDonations.filter(d =>
+      d.item.toLowerCase().includes(keyword) ||
+      d.description?.toLowerCase().includes(keyword) ||
+      d.category?.toLowerCase().includes(keyword)
+    );
+    renderDonations(filtered);
+  }
+
+  fetchDonations();
+</script>
+
 
 </body>
 </html>
