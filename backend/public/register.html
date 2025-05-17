@@ -11,6 +11,19 @@
       background-color: #f9f9f9;
       font-family: 'Tajawal', sans-serif;
     }
+     .container {
+      max-width: 500px;
+      margin-top: 80px;
+    }
+
+    .card {
+      padding: 20px;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
     .register-card {
       max-width: 500px;
       margin: 80px auto;
@@ -35,29 +48,35 @@
   <a href="index.html" class="btn btn-outline-secondary">الصفحة الرئيسية</a>
 </nav>
 
-<div class="register-card">
-  <h4 class="text-center mb-4">إنشاء حساب جديد</h4>
-  <form id="registerForm">
-    <div class="mb-3">
-      <label for="name" class="form-label">الاسم الكامل</label>
-      <input type="text" class="form-control" id="name" required>
-    </div>
-    <div class="mb-3">
-      <label for="email" class="form-label">البريد الإلكتروني</label>
-      <input type="email" class="form-control" id="email" required>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">كلمة المرور</label>
-      <input type="password" class="form-control" id="password" required>
-    </div>
-    <div class="mb-3">
-      <label for="role" class="form-label">نوع المستخدم</label>
-      <select class="form-select" id="role" required>
-        <option value="">اختر النوع</option>
-        <option value="donor">متبرع</option>
-        <option value="needy">محتاج</option>
-      </select>
-    </div>
+<!-- ✅ نموذج التسجيل -->
+<div class="container">
+  <div class="card shadow">
+    <h3 class="mb-4 text-center">تسجيل حساب جديد</h3>
+
+    <form id="registerForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">الاسم الكامل</label>
+        <input type="text" class="form-control" id="name" required minlength="3" maxlength="20" placeholder="مثال: محمد أحمد">
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">البريد الإلكتروني</label>
+        <input type="email" class="form-control" id="email" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" placeholder="example@email.com">
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">كلمة المرور</label>
+        <input type="password" class="form-control" id="password" required minlength="6" placeholder="••••••">
+      </div>
+
+      <div class="mb-3">
+        <label for="type" class="form-label">نوع الحساب</label>
+        <select class="form-select" id="type" required>
+          <option value="">اختر...</option>
+          <option value="donor">متبرع</option>
+          <option value="needy">محتاج</option>
+        </select>
+      </div>
     <button type="submit" class="btn btn-teal w-100">إنشاء الحساب</button>
     <div class="text-center mt-3">
       <a href="login.html">لديك حساب بالفعل؟ <span class="text-primary">تسجيل الدخول</span></a>
@@ -66,22 +85,43 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- ✅ سكربت التسجيل -->
 <script>
-  document.getElementById('registerForm').addEventListener('submit', async function (e) {
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const role = document.getElementById('role').value;
+    const type = document.getElementById('type').value;
+
+    if (name.length < 3 || name.length > 20) {
+      alert("الاسم يجب أن يكون بين 3 و 20 حرفًا.");
+      return;
+    }
+
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (!emailPattern.test(email)) {
+      alert("يرجى إدخال بريد إلكتروني صحيح.");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("كلمة المرور يجب أن تكون على الأقل 6 أحرف.");
+      return;
+    }
+
+    if (!type) {
+      alert("يرجى اختيار نوع الحساب.");
+      return;
+    }
 
     try {
-
-      await axios.post('/api/register', {name, email, password, role  });
-
-      alert('تم التسجيل بنجاح!');
-      window.location.href = 'login.html';
+      const response = await axios.post('/api/register', { name, email, password, type });
+      alert("✅ تم التسجيل بنجاح، يمكنك الآن تسجيل الدخول.");
+      window.location.href = "login.html";
     } catch (error) {
-      alert('فشل التسجيل');
+      alert("❌ فشل في التسجيل، ربما البريد مستخدم مسبقًا.");
     }
   });
 </script>

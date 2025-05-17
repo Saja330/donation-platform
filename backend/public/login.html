@@ -11,6 +11,21 @@
       background-color: #f9f9f9;
       font-family: 'Tajawal', sans-serif;
     }
+
+    .container {
+      max-width: 500px;
+      margin-top: 80px;
+    }
+
+    .card {
+      padding: 20px;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+    
     .login-card {
       max-width: 400px;
       margin: 100px auto;
@@ -35,40 +50,51 @@
   <a href="index.html" class="btn btn-outline-secondary">الصفحة الرئيسية</a>
 </nav>
 
-<div class="login-card">
-  <h4 class="text-center mb-4">تسجيل الدخول إلى عطاياكم</h4>
-  <form id="loginForm">
-    <div class="mb-3">
-      <label for="email" class="form-label">البريد الإلكتروني</label>
-      <input type="email" class="form-control" id="email" required>
-    </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">كلمة المرور</label>
-      <input type="password" class="form-control" id="password" required>
-    </div>
-    <button type="submit" class="btn btn-teal w-100">دخول</button>
-    <div class="text-center mt-3">
-      <a href="register.html">لا تملك حسابًا؟ <span class="text-success">سجل الآن</span></a>
-    </div>
-  </form>
+<!-- ✅ نموذج تسجيل الدخول -->
+<div class="container">
+  <div class="card shadow">
+    <h3 class="mb-4 text-center">تسجيل الدخول</h3>
+
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="email" class="form-label">البريد الإلكتروني</label>
+        <input type="email" class="form-control" id="email" required placeholder="example@email.com">
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">كلمة المرور</label>
+        <input type="password" class="form-control" id="password" required placeholder="••••••">
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">دخول</button>
+
+      <div class="text-center mt-3">
+        <a href="register.html">ليس لديك حساب؟ <span class="text-success">سجل الآن</span></a>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- ✅ سكربت الدخول -->
 <script>
-  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
     try {
-      const response = await axios.post('/api/login', { email, password }); 
-       const user = response.data;
-      localStorage.setItem('userId', user._id);
-      localStorage.setItem('userEmail', user.email);
-      localStorage.setItem('userType', user.role);
+      const response = await axios.post('/api/login', { email, password });
+      const user = response.data.user;
+
+      localStorage.setItem('userId', user.id);
+      localStorage.setItem('userType', user.type);
       localStorage.setItem('userName', user.name);
-      window.location.href = user.role === 'donor' ? 'donor-dashboard.html' : 'needy-dashboard.html';
+
+      window.location.href = user.type === 'donor' ? 'donor-dashboard.html' : 'needy-dashboard.html';
     } catch (error) {
-      alert('فشل تسجيل الدخول');
+      alert('❌ فشل تسجيل الدخول، تأكد من صحة البيانات.');
     }
   });
 </script>
