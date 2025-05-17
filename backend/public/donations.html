@@ -65,7 +65,7 @@
   }
 
   // جلب التبرعات وعرضها أول مرة
-  axios.get('/api/donations')
+  axios.get('/api/donations-with-requests')
     .then(response => {
       allDonations = response.data;
       displayDonations(allDonations);
@@ -87,7 +87,7 @@
       const card = document.createElement('div');
       card.className = 'col-md-4';
 
-      const requested = donation.status === 'requested';
+      const requested = donation.requestStatus === 'requested';
 
       card.innerHTML = `
         <div class="card h-100 shadow-sm">
