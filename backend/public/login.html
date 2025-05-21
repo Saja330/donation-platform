@@ -88,7 +88,7 @@
       const response = await axios.post('/api/login', { email, password });
       const user = response.data;
 
-      localStorage.setItem('userId', user.id);
+      localStorage.setItem('userId', user._id);
       localStorage.setItem('userType', user.type);
       localStorage.setItem('userName', user.name);
       localStorage.setItem('userEmail', user.email);
