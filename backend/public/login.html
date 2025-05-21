@@ -76,7 +76,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<!-- ✅ سكربت الدخول -->
+<!-- sign in script -->
 <script>
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -94,7 +94,7 @@
 
       window.location.href = user.type === 'donor' ? 'donor-dashboard.html' : 'needy-dashboard.html';
     } catch (error) {
-      alert('❌ فشل تسجيل الدخول، تأكد من صحة البيانات.');
+      alert('❌ فشل تسجيل الدخول، تأكد من صحة البيانات');
     }
   });
 </script>

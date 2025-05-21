@@ -81,7 +81,7 @@ app.post('/api/login', async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.type
+      type: user.type
 
     });
   } catch (err) {
