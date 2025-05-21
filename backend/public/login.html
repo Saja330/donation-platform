@@ -91,6 +91,8 @@
       localStorage.setItem('userId', user.id);
       localStorage.setItem('userType', user.type);
       localStorage.setItem('userName', user.name);
+      localStorage.setItem('userEmail', user.email);
+
 
       window.location.href = user.type === 'donor' ? 'donor-dashboard.html' : 'needy-dashboard.html';
     } catch (error) {
