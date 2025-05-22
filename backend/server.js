@@ -56,6 +56,15 @@ const messageSchema = new mongoose.Schema({
 });
 const Message = mongoose.model('Message', messageSchema);
 
+// Review Schema
+const reviewSchema = new mongoose.Schema({
+  name: String,
+  rating: Number,
+  comment: String
+});
+const Review = mongoose.model('Review', reviewSchema);
+
+
 // Endpoints
 
 // تسجيل مستخدم
@@ -218,6 +227,33 @@ app.get('/api/donations/user/:userId', async (req, res) => {
     res.status(500).json({ error: "فشل في جلب تبرعات المستخدم" });
   }
 });
+
+// Get all reviews
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ _id: -1 }).limit(5);
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: "فشل في جلب المراجعات" });
+  }
+});
+
+// Post a new review
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { name, rating, comment } = req.body;
+    if (!name || !comment || !rating) {
+      return res.status(400).json({ error: "جميع الحقول مطلوبة" });
+    }
+
+    const review = new Review({ name, rating, comment });
+    await review.save();
+    res.status(201).json({ message: "تمت إضافة المراجعة" });
+  } catch (err) {
+    res.status(500).json({ error: "فشل في إضافة المراجعة" });
+  }
+});
+
 
 // when visiting / it redirect index.html from public/
 app.get('/', (req, res) => {
