@@ -103,6 +103,9 @@
     </div>
   </div>
 </section>
+
+
+<!-- مراجعات المستخدمين -->
 <section class="container py-5">
   <h2 class="text-center mb-4">مراجعات المستخدمين</h2>
   <div class="row" id="reviews-container">
@@ -110,13 +113,48 @@
   </div>
 </section>
 
+<!-- نموذج إضافة مراجعة -->
+<section class="container py-5" id="review-section">
+  <h3 class="text-center mb-3">أضف مراجعتك</h3>
+  <div id="review-form-wrapper" class="text-end">
+    <form id="review-form">
+      <div class="mb-3">
+        <label class="form-label">الاسم</label>
+        <input type="text" class="form-control" id="reviewer-name" readonly>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">التقييم (من 1 إلى 5)</label>
+        <input type="number" class="form-control" id="reviewer-rating" min="1" max="5" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">التعليق</label>
+        <textarea class="form-control" id="reviewer-comment" rows="3" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">إرسال المراجعة</button>
+    </form>
+  </div>
+
+  <div id="login-warning" class="alert alert-warning text-center mt-4" style="display: none;">
+    <strong>تنبيه:</strong> يجب تسجيل الدخول لإضافة مراجعة.
+  </div>
+</section>
+
+
+
+<!-- الفوتر -->
+<footer>
+  جميع الحقوق محفوظة © 2025 عطاياكم
+</footer>
+
+<!-- سكربت تحميل المراجعات والتعامل مع النموذج -->
 <script>
   async function loadReviews() {
     try {
       const response = await fetch('/api/reviews');
       const reviews = await response.json();
-
       const container = document.getElementById('reviews-container');
+      container.innerHTML = '';
+
       reviews.forEach(review => {
         const stars = '⭐'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
         const card = document.createElement('div');
@@ -132,35 +170,25 @@
         container.appendChild(card);
       });
     } catch (err) {
-      console.error("Error loading reviews:", err);
+      console.error("فشل في تحميل المراجعات", err);
     }
   }
 
-  window.onload = loadReviews;
-</script>
-<section class="container py-5">
-  <h3 class="text-center mb-3">أضف مراجعتك</h3>
-  <form id="review-form" class="text-end">
-    <div class="mb-3">
-      <label class="form-label">الاسم</label>
-      <input type="text" class="form-control" id="reviewer-name" required>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">التقييم (من 1 إلى 5)</label>
-      <input type="number" class="form-control" id="reviewer-rating" min="1" max="5" required>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">التعليق</label>
-      <textarea class="form-control" id="reviewer-comment" rows="3" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">إرسال المراجعة</button>
-  </form>
-</section>
+  const user = JSON.parse(localStorage.getItem('user'));
+  document.addEventListener('DOMContentLoaded', () => {
+  if (!user) {
+    document.getElementById('review-form-wrapper').style.display = 'none';
+    document.getElementById('login-warning').style.display = 'block';
+  } else {
+    document.getElementById('reviewer-name').value = user.name;
+  }
+});
 
-<script>
-  document.getElementById('review-form').addEventListener('submit', async function (e) {
+
+  document.getElementById('review-form')?.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const name = document.getElementById('reviewer-name').value;
+    if (!user) return alert("يجب تسجيل الدخول لإضافة مراجعة");
+
     const rating = document.getElementById('reviewer-rating').value;
     const comment = document.getElementById('reviewer-comment').value;
 
@@ -168,28 +196,28 @@
       const response = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, rating, comment })
+        body: JSON.stringify({
+          name: user.name,
+          rating,
+          comment
+        })
       });
       const result = await response.json();
       if (response.ok) {
         alert("✅ تمت إضافة المراجعة");
         document.getElementById('review-form').reset();
-        document.getElementById('reviews-container').innerHTML = "";
         loadReviews();
       } else {
-        alert("❌ خطأ: " + result.error);
+        alert("❌ " + result.error);
       }
     } catch (err) {
-      alert("❌ حدث خطأ أثناء الإرسال");
+      alert("❌ فشل في الإرسال");
     }
   });
+
+  window.onload = loadReviews;
 </script>
 
-
-<!-- الفوتر -->
-<footer>
-  جميع الحقوق محفوظة © 2025 عطاياكم
-</footer>
 
 </body>
 </html>
