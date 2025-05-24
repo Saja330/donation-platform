@@ -1,4 +1,4 @@
-require('dotenv').config(); // لتحميل متغيرات البيئة من .env
+rرequire('dotenv').config(); // لتحميل متغيرات البيئة من .env
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 // تقديم ملفات الواجهة من مجلد public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// الاتصال بقاعدة البيانات
+// database connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -88,7 +88,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// تسجيل الدخول
+// login 
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -106,7 +106,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// إضافة تبرع
+// add donation
 app.post('/api/donations', async (req, res) => {
   try {
     const donation = new Donation(req.body);
@@ -152,14 +152,14 @@ app.post('/api/request', async (req, res) => {
       donationId: itemId,
       senderId: receiverId,
       receiverId: null,
-      content: `طلب ${needy.name} هذا التبرع`
+      content: `طلب ${needy.email} هذا التبرع`
     });
     await msg.save();
 
-    // إرسال إشعار للمتبرع
+    // donor notification
     if (donation && donation.email) {
       await transporter.sendMail({
-        from: `"منصة التبرع" <${process.env.EMAIL_USER}>`,
+        from: `"منصة عطاياكم" <${process.env.EMAIL_USER}>`,
         to: donation.email,
         subject: "📢 إشعار بطلب تبرع",
         text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}". يرجى الدخول إلى المنصة لمزيد من التفاصيل.`
@@ -172,7 +172,7 @@ app.post('/api/request', async (req, res) => {
   }
 });
 
-// باقي endpoints كما هي (بدون تغيير) ...
+//  endpoints 
 
 // عند زيارة /
 app.get('/', (req, res) => {
