@@ -1,4 +1,4 @@
-rرequire('dotenv').config(); // لتحميل متغيرات البيئة من .env
+require('dotenv').config(); // لتحميل متغيرات البيئة من .env
 
 const express = require('express');
 const mongoose = require('mongoose');
