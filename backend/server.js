@@ -172,6 +172,51 @@ app.post('/api/request', async (req, res) => {
   }
 });
 
+// reciever requests
+app.get('/api/requests-by-user/:userId', async (req, res) => {
+  try {
+    const requests = await Request.find({ receiverId: req.params.userId }).populate('itemId');
+    const formatted = requests.map(r => ({
+      _id: r._id,
+      timestamp: r.timestamp,
+      donation: {
+        item: r.itemId?.item,
+        location: r.itemId?.location,
+        email: r.itemId?.email,
+        _id: r.itemId?._id
+      }
+    }));
+    res.json(formatted);
+  } catch (err) {
+    res.status(500).json({ error: 'فشل في جلب طلبات المستخدم' });
+  }
+});
+
+// جلب كل المراجعات
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ _id: -1 }).limit(5);
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: "فشل في جلب المراجعات" });
+  }
+});
+
+// إضافة مراجعة (يتطلب تسجيل الدخول من الواجهة)
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { name, rating, comment } = req.body;
+    if (!name || !comment || !rating) {
+      return res.status(400).json({ error: "جميع الحقول مطلوبة ويجب تسجيل الدخول" });
+    }
+
+    const review = new Review({ name, rating, comment });
+    await review.save();
+    res.status(201).json({ message: "تمت إضافة المراجعة" });
+  } catch (err) {
+    res.status(500).json({ error: "فشل في إضافة المراجعة" });
+  }
+});
 //  endpoints 
 
 // عند زيارة /
