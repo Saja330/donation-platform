@@ -55,8 +55,10 @@ const Donation = mongoose.model('Donation', donationSchema);
 const requestSchema = new mongoose.Schema({
   itemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation' },
   receiverId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  donorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, //  مضاف
   timestamp: { type: Date, default: Date.now }
 });
+
 const Request = mongoose.model('Request', requestSchema);
 
 const messageSchema = new mongoose.Schema({
@@ -141,55 +143,59 @@ app.get('/api/donations/:email', async (req, res) => {
 app.post('/api/request', async (req, res) => {
   const { itemId, receiverId } = req.body;
   try {
-    const newRequest = new Request({ itemId, receiverId });
+    // جلب معلومات التبرع والمستخدمين
+    const donation = await Donation.findById(itemId);
+    const needy = await User.findById(receiverId);
+
+    let donor = null;
+    if (donation?.email) {
+      donor = await User.findOne({ email: donation.email });
+    }
+
+    if (!donor) {
+      console.warn('⚠️ لم يتم العثور على متبرع يطابق البريد:', donation?.email);
+      return res.status(400).json({ message: "لم يتم العثور على المتبرع." });
+    }
+
+    // إنشاء طلب التبرع مع حفظ donorId
+    const newRequest = new Request({
+      itemId,
+      receiverId,
+      donorId: donor._id
+    });
     await newRequest.save();
+
+    // تحديث حالة التبرع
     await Donation.findByIdAndUpdate(itemId, { status: 'requested' });
 
-    const donation = await Donation.findById(itemId);
-const needy = await User.findById(receiverId);
-
-let donor = null;
-if (donation?.email) {
-  donor = await User.findOne({ email: donation.email });
-}
-
-if (!donor) {
-  console.warn('⚠️ لم يتم العثور على متبرع يطابق البريد:', donation?.email);
-}
-
     // حفظ أول رسالة تلقائية
-   if (donation && donor && needy) {
-  const existing = await Message.findOne({ donationId: itemId });
-  if (!existing) {
-    const msg = new Message({
-      donationId: itemId,
-      senderId: receiverId,
-      receiverId: donor._id,
-      content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
-    });
-    await msg.save();
-    console.log('✅ أول رسالة تم حفظها تلقائيًا.');
-  } else {
-    console.log('ℹ️ توجد رسالة سابقة بالفعل.');
-  }
-}
-
-
-    // إشعار بريد إلكتروني
-    if (donation?.email) {
-      await transporter.sendMail({
-        from: `"منصة عطاياكم" <${process.env.EMAIL_USER}>`,
-        to: donation.email,
-        subject: "📢 إشعار بطلب تبرع",
-        text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}". يمكنك الآن التواصل معه عبر لوحة التحكم.`
+    const existing = await Message.findOne({ donationId: itemId });
+    if (!existing) {
+      const msg = new Message({
+        donationId: itemId,
+        senderId: receiverId,
+        receiverId: donor._id,
+        content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
       });
+      await msg.save();
+      console.log('✅ أول رسالة تم حفظها تلقائيًا.');
     }
+
+    // إشعار المتبرع عبر الإيميل
+    await transporter.sendMail({
+      from: `"منصة عطاياكم" <${process.env.EMAIL_USER}>`,
+      to: donor.email,
+      subject: "📢 إشعار بطلب تبرع",
+      text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}". يمكنك الآن التواصل معه عبر لوحة التحكم.`
+    });
 
     res.json({ message: "تم الطلب وتم فتح قناة التواصل" });
   } catch (error) {
+    console.error("❌ خطأ في تنفيذ الطلب:", error);
     res.status(500).json({ message: "فشل الطلب", error });
   }
 });
+
 
 // reciever requests
 app.get('/api/requests-by-user/:userId', async (req, res) => {
@@ -210,6 +216,17 @@ app.get('/api/requests-by-user/:userId', async (req, res) => {
     res.status(500).json({ error: 'فشل في جلب طلبات المستخدم' });
   }
 });
+app.get('/api/requests-by-donation/:donationId', async (req, res) => {
+  try {
+    const reqDoc = await Request.findOne({ itemId: req.params.donationId });
+    if (!reqDoc) return res.status(404).json({ message: "لا يوجد طلب مرتبط بهذا التبرع" });
+
+    res.json({ receiverId: reqDoc.receiverId });
+  } catch (err) {
+    res.status(500).json({ error: 'فشل في جلب الطلب حسب التبرع' });
+  }
+});
+
 // جلب كل الرسائل المرتبطة بتبرع معين
 app.get('/api/chat/:donationId', async (req, res) => {
   try {

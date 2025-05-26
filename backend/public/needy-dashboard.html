@@ -127,9 +127,8 @@ font-family: 'Tajawal', sans-serif;    }
     chatForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!selectedDonationId) return alert("اختر تبرعًا أولاً");
-      const res = await axios.get(`/api/chat/${selectedDonationId}`);
-      const participants = res.data.flatMap(m => [m.senderId._id, m.receiverId._id]);
-      const inferredReceiver = participants.find(id => id !== userId);
+      const selectedRequest = requests.find(r => r.donation._id === selectedDonationId);
+      const inferredReceiver = selectedRequest?.donorId;
       if (!inferredReceiver) return alert("لا يوجد مستلم محدد بعد.");
       await axios.post('/api/messages', {
         donationId: selectedDonationId,
