@@ -128,8 +128,8 @@ font-family: 'Tajawal', sans-serif;    }
       e.preventDefault();
       if (!selectedDonationId) return alert("اختر تبرعًا أولاً");
       const res = await axios.get(`/api/chat/${selectedDonationId}`);
-      const lastMsg = res.data.find(m => m.senderId._id !== userId);
-      const inferredReceiver = lastMsg?.senderId?._id;
+      const participants = res.data.flatMap(m => [m.senderId._id, m.receiverId._id]);
+      const inferredReceiver = participants.find(id => id !== userId);
       if (!inferredReceiver) return alert("لا يوجد مستلم محدد بعد.");
       await axios.post('/api/messages', {
         donationId: selectedDonationId,

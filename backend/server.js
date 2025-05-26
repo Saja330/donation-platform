@@ -151,13 +151,20 @@ app.post('/api/request', async (req, res) => {
 
     // حفظ أول رسالة تلقائية
     if (donation && donor && needy) {
-      const msg = new Message({
-        donationId: itemId,
-        senderId: receiverId, // المحتاج
-        receiverId: donor._id, // المتبرع
-        content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
-      });
-      await msg.save();
+      const existing = await Message.findOne({ donationId: itemId });
+      if (!existing) {
+        const msg = new Message({
+           donationId: itemId,
+           senderId: receiverId,
+           receiverId: donor._id,
+            content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
+          });
+  await msg.save();
+  console.log('✅ أول رسالة تم حفظها تلقائيًا.');
+} else {
+  console.log('ℹ️ توجد رسالة سابقة بالفعل.');
+}
+
     }
 
     // إشعار بريد إلكتروني
