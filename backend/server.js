@@ -145,27 +145,35 @@ app.post('/api/request', async (req, res) => {
     await newRequest.save();
     await Donation.findByIdAndUpdate(itemId, { status: 'requested' });
 
-    const needy = await User.findById(receiverId);
     const donation = await Donation.findById(itemId);
-    const donor = await User.findOne({ email: donation.email });
+const needy = await User.findById(receiverId);
 
-    // حفظ أول رسالة تلقائية
-    if (donation && donor && needy) {
-      const existing = await Message.findOne({ donationId: itemId });
-      if (!existing) {
-        const msg = new Message({
-           donationId: itemId,
-           senderId: receiverId,
-           receiverId: donor._id,
-            content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
-          });
-  await msg.save();
-  console.log('✅ أول رسالة تم حفظها تلقائيًا.');
-} else {
-  console.log('ℹ️ توجد رسالة سابقة بالفعل.');
+let donor = null;
+if (donation?.email) {
+  donor = await User.findOne({ email: donation.email });
 }
 
-    }
+if (!donor) {
+  console.warn('⚠️ لم يتم العثور على متبرع يطابق البريد:', donation?.email);
+}
+
+    // حفظ أول رسالة تلقائية
+   if (donation && donor && needy) {
+  const existing = await Message.findOne({ donationId: itemId });
+  if (!existing) {
+    const msg = new Message({
+      donationId: itemId,
+      senderId: receiverId,
+      receiverId: donor._id,
+      content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
+    });
+    await msg.save();
+    console.log('✅ أول رسالة تم حفظها تلقائيًا.');
+  } else {
+    console.log('ℹ️ توجد رسالة سابقة بالفعل.');
+  }
+}
+
 
     // إشعار بريد إلكتروني
     if (donation?.email) {
