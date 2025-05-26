@@ -191,6 +191,19 @@ app.get('/api/requests-by-user/:userId', async (req, res) => {
     res.status(500).json({ error: 'فشل في جلب طلبات المستخدم' });
   }
 });
+// جلب كل الرسائل المرتبطة بتبرع معين
+app.get('/api/chat/:donationId', async (req, res) => {
+  try {
+    const messages = await Message.find({ donationId: req.params.donationId })
+      .populate('senderId', 'name')
+      .populate('receiverId', 'name')
+      .sort({ timestamp: 1 });
+
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: "فشل في تحميل المحادثة" });
+  }
+});
 
 // جلب كل المراجعات
 app.get('/api/reviews', async (req, res) => {
