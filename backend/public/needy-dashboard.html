@@ -125,20 +125,24 @@ font-family: 'Tajawal', sans-serif;    }
     });
 
     chatForm.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      if (!selectedDonationId) return alert("اختر تبرعًا أولاً");
-      const selectedRequest = requests.find(r => r.donation._id === selectedDonationId);
-      const inferredReceiver = selectedRequest?.donorId;
-      if (!inferredReceiver) return alert("لا يوجد مستلم محدد بعد.");
-      await axios.post('/api/messages', {
-        donationId: selectedDonationId,
-        senderId: userId,
-        receiverId: inferredReceiver,
-        content: chatMessage.value.trim()
-      });
-      chatMessage.value = '';
-      chatSelect.dispatchEvent(new Event('change'));
-    });
+  e.preventDefault();
+  if (!selectedDonationId) return alert("اختر تبرعًا أولاً");
+  const selectedRequest = requests.find(r => r.donation._id.toString() === selectedDonationId);
+  const inferredReceiver = selectedRequest?.donorId;
+
+  if (!inferredReceiver) return alert("لا يوجد مستلم معرف");
+
+  await axios.post('/api/messages', {
+    donationId: selectedDonationId,
+    senderId: userId,
+    receiverId: inferredReceiver,
+    content: chatMessage.value.trim()
+  });
+
+  chatMessage.value = '';
+  chatSelect.dispatchEvent(new Event('change'));
+});
+
   });
 
   document.getElementById("reviewName").value = localStorage.getItem("userName") || '';
