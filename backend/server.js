@@ -147,30 +147,30 @@ app.post('/api/request', async (req, res) => {
 
     const needy = await User.findById(receiverId);
     const donation = await Donation.findById(itemId);
-const donor = await User.findOne({ email: donation.email });
+    const donor = await User.findOne({ email: donation.email });
 
-if (donation && donor && needy) {
-  const msg = new Message({
-    donationId: itemId,
-    senderId: receiverId,    // المحتاج
-    receiverId: donor._id,   // المتبرع
-    content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
-  });
-  await msg.save();
-}
+    // حفظ أول رسالة تلقائية
+    if (donation && donor && needy) {
+      const msg = new Message({
+        donationId: itemId,
+        senderId: receiverId, // المحتاج
+        receiverId: donor._id, // المتبرع
+        content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
+      });
+      await msg.save();
+    }
 
-
-    // donor notification
-    if (donation && donation.email) {
+    // إشعار بريد إلكتروني
+    if (donation?.email) {
       await transporter.sendMail({
         from: `"منصة عطاياكم" <${process.env.EMAIL_USER}>`,
         to: donation.email,
         subject: "📢 إشعار بطلب تبرع",
-        text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}". يرجى الدخول إلى المنصة لمزيد من التفاصيل.`
+        text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}". يمكنك الآن التواصل معه عبر لوحة التحكم.`
       });
     }
 
-    res.json({ message: "تم الطلب وتم إرسال الإشعار" });
+    res.json({ message: "تم الطلب وتم فتح قناة التواصل" });
   } catch (error) {
     res.status(500).json({ message: "فشل الطلب", error });
   }
