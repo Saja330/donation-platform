@@ -147,14 +147,18 @@ app.post('/api/request', async (req, res) => {
 
     const needy = await User.findById(receiverId);
     const donation = await Donation.findById(itemId);
+const donor = await User.findOne({ email: donation.email });
 
-    const msg = new Message({
-      donationId: itemId,
-      senderId: receiverId,
-      receiverId: null,
-      content: `طلب ${needy.email} هذا التبرع`
-    });
-    await msg.save();
+if (donation && donor && needy) {
+  const msg = new Message({
+    donationId: itemId,
+    senderId: receiverId,    // المحتاج
+    receiverId: donor._id,   // المتبرع
+    content: `طلب ${needy.name} (${needy.email}) هذا التبرع`
+  });
+  await msg.save();
+}
+
 
     // donor notification
     if (donation && donation.email) {
