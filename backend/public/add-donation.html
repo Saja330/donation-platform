@@ -59,8 +59,8 @@
       </div>
 
       <div class="mb-3">
-        <label for="location" class="form-label">المدينة</label>
-        <select id="location" class="form-select" required>
+        <label for="city" class="form-label">المدينة</label>
+        <select id="city" class="form-select" required>
           <option value="">اختر المدينة</option>
           <option value="الرياض">الرياض</option>
           <option value="جدة">جدة</option>
@@ -115,7 +115,7 @@
       const condition = document.getElementById("condition").value;
       const city = document.getElementById("city").value;
       const description = document.getElementById("description").value;
-      const location = document.getElementById("location").value;
+    //  const location = document.getElementById("location").value;
       const image = document.getElementById("image").value;
 
       try {
@@ -125,7 +125,7 @@
           condition,
           city,
           description,
-          location,
+         // location,
           image,
           email: userEmail,
         };

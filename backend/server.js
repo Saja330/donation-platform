@@ -44,7 +44,7 @@ const donationSchema = new mongoose.Schema({
   category: String,
   condition: String,
   description: String,
-  location: String,
+  city: String,
   image: String,
   email: String,
   status: { type: String, default: 'available' },
