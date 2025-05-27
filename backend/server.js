@@ -217,6 +217,21 @@ app.get('/api/requests-by-donor/:donorId', async (req, res) => {
     res.status(500).json({ error: 'فشل في جلب الطلبات حسب المتبرع' });
   }
 });
+app.post('/api/messages', async (req, res) => {
+  const { donationId, senderId, receiverId, content } = req.body;
+  if (!donationId || !senderId || !receiverId || !content) {
+    return res.status(400).json({ error: 'جميع الحقول مطلوبة' });
+  }
+
+  try {
+    const message = new Message({ donationId, senderId, receiverId, content });
+    await message.save();
+    res.status(201).json({ message: '✅ تم إرسال الرسالة' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '❌ فشل في إرسال الرسالة' });
+  }
+});
 
 // جلب كل المراجعات
 app.get('/api/reviews', async (req, res) => {
