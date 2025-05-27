@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Cairo&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
-
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
     body {
@@ -17,7 +16,6 @@
 </head>
 <body>
 
-<!--     الهيدر -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="index.html">عطاياكم</a>
@@ -32,10 +30,7 @@
 </nav>
 
 <div class="container mt-4">
-
   <h3 class="mb-4">تبرعاتي</h3>
-
-  <!--     تبرعاتي -->
   <div class="card mb-4">
     <div class="card-header bg-primary text-white">قائمة التبرعات</div>
     <ul class="list-group list-group-flush" id="donationList">
@@ -43,7 +38,6 @@
     </ul>
   </div>
 
-  <!--     رسائلي -->
   <div class="card mb-4">
     <div class="card-header bg-secondary text-white">📩 الرسائل المرتبطة بك</div>
     <ul class="list-group list-group-flush" id="messageList">
@@ -51,7 +45,6 @@
     </ul>
   </div>
 
-  <!--     إرسال رسالة -->
   <div class="card">
     <div class="card-header bg-info text-white">إرسال رسالة جديدة</div>
     <div class="card-body">
@@ -73,28 +66,26 @@
     </div>
   </div>
 
-<!-- إضافة مراجعة -->
-<div class="card mt-4">
-  <div class="card-header bg-warning text-dark">📝 أضف مراجعتك للمنصة</div>
-  <div class="card-body">
-    <form id="reviewFormDashboard">
-      <div class="mb-3">
-        <label class="form-label">اسمك</label>
-        <input type="text" id="reviewName" class="form-control" readonly>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">التقييم (من 1 إلى 5)</label>
-        <input type="number" id="reviewRating" class="form-control" min="1" max="5" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">تعليقك</label>
-        <textarea id="reviewComment" class="form-control" rows="3" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-warning">إرسال المراجعة</button>
-    </form>
+  <div class="card mt-4">
+    <div class="card-header bg-warning text-dark">📝 أضف مراجعتك للمنصة</div>
+    <div class="card-body">
+      <form id="reviewFormDashboard">
+        <div class="mb-3">
+          <label class="form-label">اسمك</label>
+          <input type="text" id="reviewName" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">التقييم (من 1 إلى 5)</label>
+          <input type="number" id="reviewRating" class="form-control" min="1" max="5" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">تعليقك</label>
+          <textarea id="reviewComment" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning">إرسال المراجعة</button>
+      </form>
+    </div>
   </div>
-</div>
-
 </div>
 
 <script>
@@ -109,53 +100,37 @@
       return;
     }
 
-    // تحميل التبرعات الخاصة بالمتبرع
     try {
       const res = await axios.get(`/api/donations/${userEmail}`);
-      const donations = res.data;
+      const allDonations = res.data;
+      const resReq = await axios.get(`/api/requests-by-donor/${userId}`);
+      const requestMap = {};
+      resReq.data.forEach(r => {
+        requestMap[r.itemId._id] = r.receiverId;
+      });
+
       const list = document.getElementById('donationList');
       list.innerHTML = '';
 
-      if (donations.length === 0) {
+      if (allDonations.length === 0) {
         list.innerHTML = '<li class="list-group-item text-muted">لا توجد تبرعات حتى الآن.</li>';
         return;
       }
 
-      donations.forEach(d => {
+      allDonations.forEach(d => {
+        const receiver = requestMap[d._id];
         const li = document.createElement('li');
         li.className = 'list-group-item';
-        li.innerHTML = `<strong>${d.item}</strong> - ${d.category} - <span class="text-muted">${d.status}</span>`;
+        li.innerHTML = `
+          <strong>${d.item}</strong> - ${d.category} - <span class="text-muted">${d.status}</span><br/>
+          ${receiver ? `المستفيد: <span class="text-dark">${receiver.name} (${receiver.email})</span>` : ''}
+        `;
         list.appendChild(li);
       });
     } catch (err) {
       console.error(err);
       document.getElementById('donationList').innerHTML = '<li class="list-group-item text-danger">فشل تحميل التبرعات</li>';
     }
-// عرض التبرعات مع معلومات المستفيد
-try {
-  const resReq = await axios.get(`/api/requests-by-donor/${userId}`);
-  const requests = resReq.data;
-
-  const list = document.getElementById('donationList');
-  list.innerHTML = '';
-
-  if (requests.length === 0) {
-    list.innerHTML = '<li class="list-group-item text-muted">لا توجد تبرعات مطلوبة.</li>';
-  } else {
-    requests.forEach(r => {
-      const li = document.createElement('li');
-      li.className = 'list-group-item';
-      li.innerHTML = `
-        <strong>${r.itemId?.item}</strong> - ${r.itemId?.category} - <span class="text-muted">${r.itemId?.status}</span><br/>
-        المستفيد: <span class="text-dark">${r.receiverId?.name || '---'} (${r.receiverId?.email || '---'})</span>
-      `;
-      list.appendChild(li);
-    });
-  }
-} catch (err) {
-  console.error(err);
-  document.getElementById('donationList').innerHTML = '<li class="list-group-item text-danger">فشل تحميل التبرعات المرتبطة بالمستفيدين</li>';
-}
 
     // تحميل الرسائل
     try {
@@ -205,34 +180,31 @@ try {
         console.error(err);
       }
     });
+
+    // تعبئة الاسم في المراجعة
+    document.getElementById("reviewName").value = username || '';
+
+    document.getElementById("reviewFormDashboard").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const name = localStorage.getItem("userName");
+      const rating = document.getElementById("reviewRating").value;
+      const comment = document.getElementById("reviewComment").value;
+
+      if (!name || !rating || !comment) {
+        alert("يرجى تعبئة جميع الحقول");
+        return;
+      }
+
+      try {
+        await axios.post('/api/reviews', { name, rating, comment });
+        alert("✅ تمت إضافة المراجعة");
+        document.getElementById("reviewFormDashboard").reset();
+      } catch (err) {
+        console.error(err);
+        alert("❌ فشل في إرسال المراجعة");
+      }
+    });
   });
-
-  // تعبئة الاسم
-document.getElementById("reviewName").value = localStorage.getItem("userName") || '';
-
-// إرسال المراجعة
-document.getElementById("reviewFormDashboard").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const name = localStorage.getItem("userName");
-  const rating = document.getElementById("reviewRating").value;
-  const comment = document.getElementById("reviewComment").value;
-
-  if (!name || !rating || !comment) {
-    alert("يرجى تعبئة جميع الحقول");
-    return;
-  }
-
-  try {
-    await axios.post('/api/reviews', { name, rating, comment });
-    alert("✅ تمت إضافة المراجعة");
-    document.getElementById("reviewFormDashboard").reset();
-  } catch (err) {
-    console.error(err);
-    alert("❌ فشل في إرسال المراجعة");
-  }
-});
-
 </script>
-
 </body>
 </html>

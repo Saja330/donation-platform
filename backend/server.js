@@ -176,16 +176,18 @@ app.post('/api/request', async (req, res) => {
 app.get('/api/requests-by-user/:userId', async (req, res) => {
   try {
     const requests = await Request.find({ receiverId: req.params.userId }).populate('itemId');
-    const formatted = requests.map(r => ({
-      _id: r._id,
-      timestamp: r.timestamp,
-      donation: {
-        item: r.itemId?.item,
-        location: r.itemId?.location,
-        email: r.itemId?.email,
-        _id: r.itemId?._id
-      }
-    }));
+   const formatted = requests.map(r => ({
+  _id: r._id,
+  timestamp: r.timestamp,
+  donorId: r.donorId, // ✅ هذا المطلوب
+  donation: {
+    item: r.itemId?.item,
+    location: r.itemId?.location,
+    email: r.itemId?.email,
+    _id: r.itemId?._id
+  }
+}));
+
     res.json(formatted);
   } catch (err) {
     res.status(500).json({ error: 'فشل في جلب طلبات المستخدم' });
