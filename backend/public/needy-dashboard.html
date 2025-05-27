@@ -29,22 +29,30 @@
 
 <div class="container mt-4">
   <h3 class="mb-4">طلباتي السابقة</h3>
-
   <div class="card mb-4">
-    <div class="card-header bg-success text-white">تفاصيل الطلبات</div>
+    <div class="card-header bg-primary text-white">تفاصيل الطلبات</div>
     <ul class="list-group list-group-flush" id="myRequests">
       <li class="list-group-item text-muted">جاري التحميل...</li>
     </ul>
   </div>
 
-  <div class="card mb-4">
-    <div class="card-header bg-dark text-white">💬 دردشة مباشرة</div>
+  <div class="card">
+    <div class="card-header bg-info text-white">إرسال رسالة جديدة</div>
     <div class="card-body">
-      <select id="chatDonationSelect" class="form-select mb-3"></select>
-      <div id="chatBox" style="height: 300px; overflow-y: auto; background-color: #f9f9f9; padding: 10px; border: 1px solid #ccc;"></div>
-      <form id="chatForm" class="mt-2 d-flex">
-        <input type="text" id="chatMessage" class="form-control me-2" placeholder="اكتب رسالتك..." required />
-        <button class="btn btn-primary">إرسال</button>
+      <form id="msgForm">
+        <div class="mb-2">
+          <label>معرّف التبرع (donationId)</label>
+          <input type="text" id="donationId" class="form-control" required>
+        </div>
+        <div class="mb-2">
+          <label>معرّف المتبرع (receiverId)</label>
+          <input type="text" id="receiverId" class="form-control" required>
+        </div>
+        <div class="mb-2">
+          <label>نص الرسالة</label>
+          <textarea id="chatMessage" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">إرسال</button>
       </form>
     </div>
   </div>
@@ -75,17 +83,10 @@
   document.addEventListener('DOMContentLoaded', async function () {
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('userName');
-    const userEmail = localStorage.getItem('userEmail');
     document.getElementById("username").textContent = `مرحبًا، ${username}`;
-    if (!userId) {
-      window.location.href = '/login.html';
-      return;
-    }
 
     const resReq = await axios.get(`/api/requests-by-user/${userId}`);
     const requests = resReq.data;
-    let selectedDonationId = null;
-
     const reqList = document.getElementById('myRequests');
     reqList.innerHTML = '';
     if (requests.length === 0) {
@@ -96,60 +97,32 @@
         li.className = 'list-group-item';
         li.innerHTML = `
           <strong>${r.donation.item}</strong> - ${new Date(r.timestamp).toLocaleDateString()}<br/>
-          الموقع: ${r.donation.city || r.donation.location || '---'}<br/>
           معرف التبرع: <code>${r.donation._id}</code><br/>
-          ${r.donorId ? `معرف المتبرع: <code>${r.donorId}</code>` : ''}
+          معرف المتبرع: <code>${r.donorId || 'غير متوفر'}</code>
         `;
         reqList.appendChild(li);
       });
     }
 
-    const chatSelect = document.getElementById("chatDonationSelect");
-    const chatBox = document.getElementById("chatBox");
-    const chatForm = document.getElementById("chatForm");
-    const chatMessage = document.getElementById("chatMessage");
-
-    const chatDonations = requests.filter(r => r.donation._id);
-    chatDonations.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d.donation._id;
-      opt.textContent = `${d.donation.item} - ${d.donation.city || d.donation.location}`;
-      chatSelect.appendChild(opt);
-    });
-
-    chatSelect.addEventListener("change", async function () {
-      selectedDonationId = this.value;
-      if (!selectedDonationId) return;
-
-      const res = await axios.get(`/api/chat/${selectedDonationId}`);
-      chatBox.innerHTML = '';
-      res.data.forEach(m => {
-        const div = document.createElement('div');
-        div.className = m.senderId._id === userId ? 'text-end text-primary mb-2' : 'text-start text-dark mb-2';
-        div.innerHTML = `<strong>${m.senderId.name}:</strong> ${m.content}`;
-        chatBox.appendChild(div);
-      });
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-
-    chatForm.addEventListener("submit", async function (e) {
+    document.getElementById('msgForm').addEventListener('submit', async function (e) {
       e.preventDefault();
-      if (!selectedDonationId) return alert("اختر تبرعًا أولاً");
+      const donationId = document.getElementById('donationId').value;
+      const receiverId = document.getElementById('receiverId').value;
+      const content = document.getElementById('chatMessage').value;
 
-      const selectedRequest = requests.find(r => r.donation._id.toString() === selectedDonationId);
-      const inferredReceiver = selectedRequest?.donorId;
-
-      if (!inferredReceiver) return alert("لا يوجد مستلم معرف");
-
-      await axios.post('/api/messages', {
-        donationId: selectedDonationId,
-        senderId: userId,
-        receiverId: inferredReceiver,
-        content: chatMessage.value.trim()
-      });
-
-      chatMessage.value = '';
-      chatSelect.dispatchEvent(new Event('change'));
+      try {
+        await axios.post('/api/messages', {
+          donationId,
+          senderId: userId,
+          receiverId, // هنا معرف المتبرع
+          content
+        });
+        alert("✅ تم إرسال الرسالة");
+        document.getElementById('msgForm').reset();
+      } catch (err) {
+        alert("❌ فشل في إرسال الرسالة");
+        console.error(err);
+      }
     });
   });
 
