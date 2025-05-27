@@ -217,6 +217,7 @@ app.get('/api/requests-by-donor/:donorId', async (req, res) => {
     res.status(500).json({ error: 'فشل في جلب الطلبات حسب المتبرع' });
   }
 });
+//end point for sending
 app.post('/api/messages', async (req, res) => {
   const { donationId, senderId, receiverId, content } = req.body;
   if (!donationId || !senderId || !receiverId || !content) {
@@ -230,6 +231,25 @@ app.post('/api/messages', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: '❌ فشل في إرسال الرسالة' });
+  }
+});
+// جلب كل الرسائل الخاصة بمستخدم (سواء كمرسل أو مستقبل)
+app.get('/api/messages/:userId', async (req, res) => {
+  try {
+    const messages = await Message.find({
+      $or: [
+        { senderId: req.params.userId },
+        { receiverId: req.params.userId }
+      ]
+    })
+      .populate('senderId', 'name')
+      .populate('receiverId', 'name')
+      .populate('donationId', 'item')
+      .sort({ timestamp: 1 });
+
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: "فشل في تحميل الرسائل" });
   }
 });
 

@@ -105,6 +105,31 @@
 });
 
     }
+ try {
+      const res = await axios.get(`/api/messages/${userId}`);
+      const messages = res.data;
+      const list = document.getElementById('messageList');
+      list.innerHTML = '';
+
+      if (messages.length === 0) {
+        list.innerHTML = '<li class="list-group-item text-muted">لا توجد رسائل</li>';
+        return;
+      }
+
+      messages.forEach(m => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `
+          من: ${m.senderId?.name || '---'}<br/>
+          للعنصر: ${m.donationId?.item || '---'}<br/>
+          الرسالة: ${m.content}
+        `;
+        list.appendChild(li);
+      });
+    } catch (err) {
+      console.error(err);
+      document.getElementById('messageList').innerHTML = '<li class="list-group-item text-danger">فشل تحميل الرسائل</li>';
+    }
 
     document.getElementById('msgForm').addEventListener('submit', async function (e) {
       e.preventDefault();
