@@ -55,6 +55,7 @@ const Donation = mongoose.model('Donation', donationSchema);
 const requestSchema = new mongoose.Schema({
   itemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation' },
   receiverId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  donorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, 
   timestamp: { type: Date, default: Date.now }
 });
 const Request = mongoose.model('Request', requestSchema);
@@ -141,28 +142,33 @@ app.get('/api/donations/:email', async (req, res) => {
 app.post('/api/request', async (req, res) => {
   const { itemId, receiverId } = req.body;
   try {
-    const newRequest = new Request({ itemId, receiverId });
-    await newRequest.save();
-    await Donation.findByIdAndUpdate(itemId, { status: 'requested' });
-
-    const needy = await User.findById(receiverId);
     const donation = await Donation.findById(itemId);
+    const needy = await User.findById(receiverId);
+    const donor = await User.findOne({ email: donation.email });
+
+    const newRequest = new Request({
+      itemId,
+      receiverId,
+      donorId: donor?._id //  تم الحفظ هنا
+    });
+    await newRequest.save();
+
+    await Donation.findByIdAndUpdate(itemId, { status: 'requested' });
 
     const msg = new Message({
       donationId: itemId,
       senderId: receiverId,
-      receiverId: null,
+      receiverId: donor?._id,
       content: `طلب ${needy.email} هذا التبرع`
     });
     await msg.save();
 
-    // donor notification
-    if (donation && donation.email) {
+    if (donation?.email) {
       await transporter.sendMail({
         from: `"منصة عطاياكم" <${process.env.EMAIL_USER}>`,
         to: donation.email,
         subject: "📢 إشعار بطلب تبرع",
-        text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}". يرجى الدخول إلى المنصة لمزيد من التفاصيل.`
+        text: `قام المستخدم ${needy.name} بطلب تبرعك "${donation.item}".`
       });
     }
 
@@ -172,21 +178,24 @@ app.post('/api/request', async (req, res) => {
   }
 });
 
+
 // reciever requests
 app.get('/api/requests-by-user/:userId', async (req, res) => {
   try {
     const requests = await Request.find({ receiverId: req.params.userId }).populate('itemId');
-   const formatted = requests.map(r => ({
+ const formatted = requests.map(r => ({
   _id: r._id,
   timestamp: r.timestamp,
-  donorId: r.donorId, // ✅ هذا المطلوب
+  donorId: r.donorId, // 👈 أضف هذا
   donation: {
     item: r.itemId?.item,
     location: r.itemId?.location,
+    city: r.itemId?.city, // ✅ تأكد من وجود هذا لو تستخدمه في العرض
     email: r.itemId?.email,
     _id: r.itemId?._id
   }
 }));
+
 
     res.json(formatted);
   } catch (err) {
