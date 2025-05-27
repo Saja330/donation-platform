@@ -93,15 +93,17 @@
       reqList.innerHTML = '<li class="list-group-item text-muted">لا توجد طلبات.</li>';
     } else {
       requests.forEach(r => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.innerHTML = `
-          <strong>${r.donation.item}</strong> - ${new Date(r.timestamp).toLocaleDateString()}<br/>
-          معرف التبرع: <code>${r.donation._id}</code><br/>
-          معرف المتبرع: <code>${r.donorId || 'غير متوفر'}</code>
-        `;
-        reqList.appendChild(li);
-      });
+  const li = document.createElement('li');
+  li.className = 'list-group-item';
+  li.innerHTML = `
+    <strong>${r.donation.item}</strong> - ${new Date(r.timestamp).toLocaleDateString()}<br/>
+    معرف التبرع: <code>${r.donation._id}</code><br/>
+    معرف المتبرع: <code>${r.donorId || 'غير متوفر'}</code><br/>
+    ${r.donorEmail ? `بريد المتبرع: <span>${r.donorEmail}</span>` : ''}
+  `;
+  reqList.appendChild(li);
+});
+
     }
 
     document.getElementById('msgForm').addEventListener('submit', async function (e) {

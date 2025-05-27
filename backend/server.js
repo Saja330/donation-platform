@@ -183,18 +183,21 @@ app.post('/api/request', async (req, res) => {
 app.get('/api/requests-by-user/:userId', async (req, res) => {
   try {
     const requests = await Request.find({ receiverId: req.params.userId }).populate('itemId');
- const formatted = requests.map(r => ({
-  _id: r._id,
-  timestamp: r.timestamp,
-  donorId: r.donorId, // 👈 أضف هذا
-  donation: {
-    item: r.itemId?.item,
-    location: r.itemId?.location,
-    city: r.itemId?.city, // ✅ تأكد من وجود هذا لو تستخدمه في العرض
-    email: r.itemId?.email,
-    _id: r.itemId?._id
-  }
+const formatted = await Promise.all(requests.map(async r => {
+  const donor = r.donorId ? await User.findById(r.donorId) : null;
+  return {
+    _id: r._id,
+    timestamp: r.timestamp,
+    donorId: donor?._id,
+    donorEmail: donor?.email,
+    donation: {
+      item: r.itemId?.item,
+      city: r.itemId?.city,
+      _id: r.itemId?._id
+    }
+  };
 }));
+
 
 
     res.json(formatted);

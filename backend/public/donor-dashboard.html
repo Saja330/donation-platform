@@ -106,8 +106,12 @@
       const resReq = await axios.get(`/api/requests-by-donor/${userId}`);
       const requestMap = {};
       resReq.data.forEach(r => {
-        requestMap[r.itemId._id] = r.receiverId;
-      });
+      requestMap[r.itemId._id] = {
+    receiverId: r.receiverId?._id,
+    receiverEmail: r.receiverId?.email
+  };
+});
+
 
       const list = document.getElementById('donationList');
       list.innerHTML = '';
@@ -117,16 +121,21 @@
         return;
       }
 
-      allDonations.forEach(d => {
-        const receiver = requestMap[d._id];
-        const li = document.createElement('li');
-        li.className = 'list-group-item';
-        li.innerHTML = `
-          <strong>${d.item}</strong> - ${d.category} - <span class="text-muted">${d.status}</span><br/>
-          ${receiver ? `المستفيد: <span class="text-dark">${receiver.name} (${receiver.email})</span>` : ''}
-        `;
-        list.appendChild(li);
-      });
+    allDonations.forEach(d => {
+  const req = requestMap[d._id] || {};
+  const li = document.createElement('li');
+  li.className = 'list-group-item';
+  li.innerHTML = `
+    <strong>${d.item}</strong><br/>
+    النوع: ${d.category}<br/>
+    الحالة: <span class="text-muted">${d.status}</span><br/>
+    معرف التبرع: <code>${d._id}</code><br/>
+    ${req.receiverId ? `معرّف المستفيد: <code>${req.receiverId}</code><br/>` : ''}
+    ${req.receiverEmail ? `البريد الإلكتروني للمستفيد: <span>${req.receiverEmail}</span>` : ''}
+  `;
+  list.appendChild(li);
+});
+
     } catch (err) {
       console.error(err);
       document.getElementById('donationList').innerHTML = '<li class="list-group-item text-danger">فشل تحميل التبرعات</li>';
